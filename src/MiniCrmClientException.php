@@ -10,6 +10,7 @@ class MiniCrmClientException extends \Exception
     const UNEXPECTED_ANSWER = 3;
     const INVALID_RESPONSE_HEADER = 4;
     const NO_DATA = 5;
+    const WRONG_DATA_PROVIDED = 6;
 
     public function __construct($message, $code, \Throwable $previous = null)
     {

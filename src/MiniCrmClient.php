@@ -29,13 +29,12 @@ class MiniCrmClient implements MiniCrmClientInterface
     protected $apiKey = '';
 
     /**
-     * @var integer
+     * {@inheritdoc}
      */
     protected $systemId;
 
     /**
-     * MiniCrmClient constructor.
-     * @param ClientInterface $client
+     * {@inheritdoc}
      */
     public function __construct(ClientInterface $client)
     {
@@ -43,7 +42,7 @@ class MiniCrmClient implements MiniCrmClientInterface
     }
 
     /**
-     * @return \Psr\Http\Message\ResponseInterface
+     * {@inheritdoc}
      */
     public function getResponse()
     {
@@ -51,7 +50,7 @@ class MiniCrmClient implements MiniCrmClientInterface
     }
 
     /**
-     * @return string
+     * {@inheritdoc}
      */
     public function getBaseUri()
     {
@@ -59,8 +58,7 @@ class MiniCrmClient implements MiniCrmClientInterface
     }
 
     /**
-     * @param $baseUri
-     * @return $this
+     * {@inheritdoc}
      */
     public function setBaseUri($baseUri)
     {
@@ -70,7 +68,7 @@ class MiniCrmClient implements MiniCrmClientInterface
     }
 
     /**
-     * @return string
+     * {@inheritdoc}
      */
     public function getApiKey()
     {
@@ -78,8 +76,7 @@ class MiniCrmClient implements MiniCrmClientInterface
     }
 
     /**
-     * @param $apiKey
-     * @return $this
+     * {@inheritdoc}
      */
     public function setApiKey($apiKey)
     {
@@ -89,7 +86,7 @@ class MiniCrmClient implements MiniCrmClientInterface
     }
 
     /**
-     * @return int
+     * {@inheritdoc}
      */
     public function getSystemId()
     {
@@ -97,8 +94,7 @@ class MiniCrmClient implements MiniCrmClientInterface
     }
 
     /**
-     * @param $systemId
-     * @return $this
+     * {@inheritdoc}
      */
     public function setSystemId($systemId)
     {
@@ -128,6 +124,30 @@ class MiniCrmClient implements MiniCrmClientInterface
         }
 
         return $this;
+    }
+
+    /**
+     * @param $type
+     * @return mixed
+     * @throws MiniCrmClientException
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     *
+     * Type could be either 'Business', 'Person' or 'Project/$CategoryID'.
+     */
+    public function getSchema($type)
+    {
+        if (!preg_match('/(Business|Person|Project\/[0-9]{1,9})/', $type)) {
+            throw new MiniCrmClientException(
+                'The data you provided is invalid. Please use either "Business", "Person" or "Project/$ID".',
+                MiniCrmClientException::WRONG_DATA_PROVIDED);
+        } else {
+            $this->sendGet("/Api/R3/Schema/{$type}");
+
+            $body = $this->parseResponse();
+
+            return $body;
+        }
+
     }
 
     /**

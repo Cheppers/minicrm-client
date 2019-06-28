@@ -8,25 +8,47 @@ use GuzzleHttp\ClientInterface;
 
 interface MiniCrmClientInterface
 {
+    /**
+     * MiniCrmClientInterface constructor.
+     * @param ClientInterface $client
+     */
     public function __construct(ClientInterface $client);
 
+    /**
+     * @return \Psr\Http\Message\ResponseInterface
+     */
     public function getResponse();
 
+    /**
+     * @return string
+     */
     public function getApiKey();
 
+    /**
+     * @param $apiKey
+     * @return $this
+     */
     public function setApiKey($apiKey);
 
+    /**
+     * @return int
+     */
     public function getSystemId();
 
+    /**
+     * @param $systemId
+     * @return $this
+     */
     public function setSystemId($systemId);
 
+    /**
+     * @return string
+     */
     public function getBaseUri();
 
-    public function setBaseUri($baseUri);
-
     /**
-     * @return mixed
-     * @see "https://r3.minicrm.hu/Api/R3/Category"
+     * @param $baseUri
+     * @return $this
      */
-    public function getCategories();
+    public function setBaseUri($baseUri);
 }
