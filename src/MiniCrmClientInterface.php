@@ -25,7 +25,7 @@ interface MiniCrmClientInterface
     public function setBaseUri($baseUri);
 
     /**
-     * @return \Cheppers\MiniCrm\DataTypes\Category[]
+     * @return mixed
      * @see "https://r3.minicrm.hu/Api/R3/Category"
      */
     public function getCategories();
