@@ -1,0 +1,8 @@
+{
+    "name": "cheppers/minicrm-client",
+    "description": "MiniCRM client",
+    "type": "library",
+    "license": "GPL-2.0+",
+    "minimum-stability": "dev",
+    "require": {}
+}
