@@ -4,5 +4,38 @@
     "type": "library",
     "license": "GPL-2.0+",
     "minimum-stability": "dev",
-    "require": {}
+    "prefer-stable": true,
+    "config": {
+        "bin-dir": "bin",
+        "sort-packages": true,
+        "optimize-autoloader": true
+    },
+    "require": {
+        "php": ">=7.2",
+        "ext-json": "*",
+        "guzzlehttp/guzzle": "^6.3"
+    },
+    "require-dev": {
+        "consolidation/robo": "^1.4",
+        "phpunit/phpunit": "^8.2",
+        "squizlabs/php_codesniffer": "^3.4",
+        "sweetchuck/git-hooks": "^0.0.10",
+        "sweetchuck/lint-report": "^0.0.10",
+        "sweetchuck/robo-git": "^0.0.10",
+        "sweetchuck/robo-phpcs": "^0.0.20",
+        "webmozart/path-util": "^2.3"
+    },
+    "autoload": {
+        "psr-4": {
+            "Cheppers\\MiniCrm\\": "src/",
+            "GuzzleHttp\\": "vendor/guzzlehttp/guzzle/src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Cheppers\\MiniCrm\\Composer\\": "src-dev/Composer",
+            "Cheppers\\MiniCrm\\Tests\\": "src-dev/Tests"
+        }
+    },
+    "scripts": {}
 }
