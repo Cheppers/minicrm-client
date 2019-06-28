@@ -138,7 +138,7 @@ class MiniCrmClient implements MiniCrmClientInterface
     {
         if (!preg_match('/(Business|Person|Project\/[0-9]{1,9})/', $type)) {
             throw new MiniCrmClientException(
-                'The data you provided is invalid. Please use either "Business", "Person" or "Project/$ID".',
+                'The data (type) you provided is invalid. Please use either "Business", "Person" or "Project/$ID".',
                 MiniCrmClientException::WRONG_DATA_PROVIDED);
         } else {
             $this->sendGet("/Api/R3/Schema/{$type}");
