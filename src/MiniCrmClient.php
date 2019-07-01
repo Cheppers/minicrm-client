@@ -209,6 +209,61 @@ class MiniCrmClient implements MiniCrmClientInterface
     }
 
     /**
+     * @param string $name
+     * @param string $userId
+     * @param int $categoryId
+     * @param int $contactId
+     * @param int $statusId
+     * @param null $businessId
+     * @return string
+     * @throws MiniCrmClientException
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
+    public function createProject(string $name, string $userId, int $categoryId, int $contactId, int $statusId, $businessId = null)
+    {
+        $name = filter_var($name, FILTER_SANITIZE_STRING);
+        $userId = filter_var($userId, FILTER_SANITIZE_STRING);
+
+        $data = [
+            'json' => [
+                'Name' => $name,
+                'UserId' => $userId,
+                'CategoryId' => $categoryId,
+                'ContactId' => $contactId,
+                'StatusId' => $statusId
+            ],
+        ];
+
+        if (!is_null($businessId) && !is_int($businessId)) {
+            throw new MiniCrmClientException(
+                'The business ID you provided is invalid. Please use only numbers.',
+                MiniCrmClientException::WRONG_DATA_PROVIDED
+            );
+        } elseif (!is_null($businessId) && is_int($businessId)) {
+            $data['json']['BusinessId'] = $businessId;
+        }
+
+
+        $this->sendPut('/Api/R3/Project', $data);
+
+        if ($this->response->getStatusCode() !== 200) {
+            $responseContentType = $this->response->getHeader('Content-Type');
+            $responseContentType = end($responseContentType);
+            if ($responseContentType === 'application/json') {
+                $this->parseResponse();
+            }
+            throw new MiniCrmClientException(
+                'Unexpected answer',
+                MiniCrmClientException::UNEXPECTED_ANSWER
+            );
+        } else {
+            $result = 'Project created.';
+        }
+
+        return $result;
+    }
+
+    /**
      * @param null $email
      * @param null $updatedSince
      * @param null $searchString
@@ -340,9 +395,9 @@ class MiniCrmClient implements MiniCrmClientInterface
      * @return MiniCrmClient
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    protected function sendPost($path, array $options = [])
+    protected function sendPut($path, array $options = [])
     {
-        return $this->sendRequest('POST', $path, $options);
+        return $this->sendRequest('PUT', $path, $options);
     }
 
     /**
