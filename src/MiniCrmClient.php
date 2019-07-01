@@ -165,35 +165,47 @@ class MiniCrmClient implements MiniCrmClientInterface
     }
 
     /**
-     * @param int $categoryId
+     * @param null $categoryId
      * @param null $page
+     * @param null $businessId
      * @return mixed
      * @throws MiniCrmClientException
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public function getProject(int $categoryId, $page = null)
+    public function getProject($categoryId = null, $page = null, $businessId = null)
     {
-        if (!is_int($categoryId)) {
+        if (!is_null($categoryId) && !is_int($categoryId)) {
             throw new MiniCrmClientException(
                 'The category ID you provided is invalid. Please use only numbers.',
                 MiniCrmClientException::WRONG_DATA_PROVIDED
             );
-        } elseif (empty($categoryId)) {
-            throw new MiniCrmClientException(
-                'You did not provide any category ID. Please use a number representing the category.',
-                MiniCrmClientException::NO_DATA
-            );
+        } elseif (!is_null($categoryId) && is_int($categoryId)) {
+            $vCategoryId = "&CategoryId={$categoryId}";
         } else {
-            if (!is_null($page) && is_int($page)) {
-                $pageParam = "&Page={$page}";
-            } else {
-                $pageParam = '';
-            }
-            $this->sendGet("/Api/R3/Project?CategoryId={$categoryId}{$pageParam}");
-            $body = $this->parseResponse();
-
-            return $body;
+            $vCategoryId = '';
         }
+
+        if (!is_null($page) && is_int($page)) {
+            $vPage = "&Page={$page}";
+        } else {
+            $vPage = '';
+        }
+
+        if (!is_null($businessId) && !is_int($businessId)) {
+            throw new MiniCrmClientException(
+                'The business ID you provided is invalid. Please use only numbers.',
+                MiniCrmClientException::WRONG_DATA_PROVIDED
+            );
+        } elseif (!is_null($businessId) && is_int($businessId)) {
+            $vBusinessId = "&MainContactId={$businessId}";
+        } else {
+            $vBusinessId = '';
+        }
+
+        $this->sendGet("/Api/R3/Project?{$vCategoryId}{$vPage}{$vBusinessId}");
+        $body = $this->parseResponse();
+
+        return $body;
     }
 
     /**
