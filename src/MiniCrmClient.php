@@ -163,6 +163,26 @@ class MiniCrmClient implements MiniCrmClientInterface
         return $body;
     }
 
+    public function getProject(int $categoryId, $page = NULL)
+    {
+        if (!is_int($categoryId)) {
+            throw new MiniCrmClientException(
+                'The category ID you provided is invalid. Please use only numbers.',
+                MiniCrmClientException::WRONG_DATA_PROVIDED
+            );
+        } else {
+            if (!is_null($page) && is_int($page)) {
+                $pageParam = "&Page={$page}";
+            } else {
+                $pageParam = '';
+            }
+            $this->sendGet("/Api/R3/Project?CategoryId={$categoryId}{$pageParam}");
+            $body = $this->parseResponse();
+
+            return $body;
+        }
+    }
+
     /**
      * @param $path
      * @return string
