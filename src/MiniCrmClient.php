@@ -163,6 +163,13 @@ class MiniCrmClient implements MiniCrmClientInterface
         return $body;
     }
 
+    /**
+     * @param int $categoryId
+     * @param null $page
+     * @return mixed
+     * @throws MiniCrmClientException
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
     public function getProject(int $categoryId, $page = NULL)
     {
         if (!is_int($categoryId)) {
