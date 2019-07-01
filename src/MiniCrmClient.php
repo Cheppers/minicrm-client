@@ -200,6 +200,7 @@ class MiniCrmClient implements MiniCrmClientInterface
      * @param null $email
      * @param null $updatedSince
      * @param null $searchString
+     * @param int|null $businessId
      * @return mixed
      * @throws MiniCrmClientException
      * @throws \GuzzleHttp\Exception\GuzzleException
@@ -207,10 +208,11 @@ class MiniCrmClient implements MiniCrmClientInterface
     public function getContact(
         $email = null,
         $updatedSince = null,
-        $searchString = null
+        $searchString = null,
+        $businessId = null
     ) {
         // Check if any parameter is provided or all of them are NULL.
-        if (is_null($email) && is_null($updatedSince) && is_null($searchString)) {
+        if (is_null($email) && is_null($updatedSince) && is_null($searchString) && is_null($businessId)) {
             throw new MiniCrmClientException(
                 'Please provide at least 1 parameter to search for.',
                 MiniCrmClientException::NO_DATA
@@ -250,7 +252,18 @@ class MiniCrmClient implements MiniCrmClientInterface
             $vSearchString = '';
         }
 
-        $this->sendGet("/Api/R3/Contact?Email={$vEmail}&UpdatedSince={$vUpdatedSince}{$vSearchString}");
+        if (!is_null($businessId) && !is_int($businessId)) {
+            throw new MiniCrmClientException(
+                'The business ID you provided is invalid. Please use only numbers.',
+                MiniCrmClientException::WRONG_DATA_PROVIDED
+            );
+        } elseif (!is_null($businessId) && is_int($businessId)) {
+            $vBusinessId = "&MainContactId={$businessId}";
+        } else {
+            $vBusinessId = '';
+        }
+
+        $this->sendGet("/Api/R3/Contact?Email={$vEmail}&UpdatedSince={$vUpdatedSince}{$vSearchString}{$vBusinessId}");
         $body = $this->parseResponse();
 
         return $body;
