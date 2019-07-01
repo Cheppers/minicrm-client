@@ -4,6 +4,7 @@ declare(strict_types = 1);
 
 namespace Cheppers\MiniCrm;
 
+use DateTime;
 use GuzzleHttp\ClientInterface;
 
 class MiniCrmClient implements MiniCrmClientInterface
@@ -139,7 +140,8 @@ class MiniCrmClient implements MiniCrmClientInterface
         if (!preg_match('/(Business|Person|Project\/[0-9]{1,9})/', $type)) {
             throw new MiniCrmClientException(
                 'The data (type) you provided is invalid. Please use either "Business", "Person" or "Project/$ID".',
-                MiniCrmClientException::WRONG_DATA_PROVIDED);
+                MiniCrmClientException::WRONG_DATA_PROVIDED
+            );
         } else {
             $this->sendGet("/Api/R3/Schema/{$type}");
 
@@ -147,7 +149,6 @@ class MiniCrmClient implements MiniCrmClientInterface
 
             return $body;
         }
-
     }
 
     /**
@@ -170,12 +171,17 @@ class MiniCrmClient implements MiniCrmClientInterface
      * @throws MiniCrmClientException
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public function getProject(int $categoryId, $page = NULL)
+    public function getProject(int $categoryId, $page = null)
     {
         if (!is_int($categoryId)) {
             throw new MiniCrmClientException(
                 'The category ID you provided is invalid. Please use only numbers.',
                 MiniCrmClientException::WRONG_DATA_PROVIDED
+            );
+        } elseif (empty($categoryId)) {
+            throw new MiniCrmClientException(
+                'You did not provide any category ID. Please use a number representing the category.',
+                MiniCrmClientException::NO_DATA
             );
         } else {
             if (!is_null($page) && is_int($page)) {
@@ -188,6 +194,72 @@ class MiniCrmClient implements MiniCrmClientInterface
 
             return $body;
         }
+    }
+
+    /**
+     * @param null $email
+     * @param null $updatedSince
+     * @param null $searchString
+     * @return mixed
+     * @throws MiniCrmClientException
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
+    public function getContact(
+        $email = null,
+        $updatedSince = null,
+        $searchString = null
+    ) {
+        // Check if any parameter is provided or all of them are NULL.
+        if (is_null($email) && is_null($updatedSince) && is_null($searchString)) {
+            throw new MiniCrmClientException(
+                'Please provide at least 1 parameter to search for.',
+                MiniCrmClientException::NO_DATA
+            );
+        }
+
+        // Validate E-mail address.
+        if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $vEmail = $email;
+        } elseif (is_null($email)) {
+            $vEmail = '';
+        } else {
+            throw new MiniCrmClientException(
+                'The provided email is not valid. Please use a valid e-mail address.',
+                MiniCrmClientException::WRONG_DATA_PROVIDED
+            );
+        }
+
+        // Validate Update Date.
+        if (!is_null($updatedSince)) {
+            if ($this->isValidDate($updatedSince)) {
+                $vUpdatedSince = $updatedSince;
+            } else {
+                throw new MiniCrmClientException(
+                    'The provided update date is invalid. Please use the \'2012-12-12+12:12:12\' format.',
+                    MiniCrmClientException::WRONG_DATA_PROVIDED
+                );
+            }
+        } else {
+            $vUpdatedSince = '';
+        }
+
+        // Sanitize search string.
+        if (!is_null($searchString)) {
+            $vSearchString = '&Query=' . filter_var($searchString, FILTER_SANITIZE_STRING);
+        } else {
+            $vSearchString = '';
+        }
+
+        $this->sendGet("/Api/R3/Contact?Email={$vEmail}&UpdatedSince={$vUpdatedSince}{$vSearchString}");
+        $body = $this->parseResponse();
+
+        return $body;
+    }
+
+    public function isValidDate($date, $format = 'Y-m-d\+H:i:s')
+    {
+        $dateObj = DateTime::createFromFormat($format, $date);
+        return $dateObj && $dateObj->format($format) == $date;
     }
 
     /**

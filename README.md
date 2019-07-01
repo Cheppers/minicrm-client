@@ -4,6 +4,7 @@ PHP library implementing the MiniCRM API https://minicrm.hu
 ## @todo
 - error handling (400,401,404,405,500)
 - pager (minicrm API on GET requests only shows 100 elements, need to use 'Pager=x' in parameters to get the 'x' page
+- getcontact() query based on fieldnames
 
 ## How to use
 To create a MiniCRM client, you need to pass a Guzzle client to the constructor.
