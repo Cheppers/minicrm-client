@@ -214,12 +214,13 @@ class MiniCrmClient implements MiniCrmClientInterface
      * @param int $categoryId
      * @param int $contactId
      * @param int $statusId
-     * @param null $businessId
      * @return string
      * @throws MiniCrmClientException
      * @throws \GuzzleHttp\Exception\GuzzleException
+     *
+     * You can attach a business to a partner (contact) which can be attached to a project.
      */
-    public function createProject(string $name, string $userId, int $categoryId, int $contactId, int $statusId, $businessId = null)
+    public function createProject(string $name, string $userId, int $categoryId, int $contactId, int $statusId)
     {
         $name = filter_var($name, FILTER_SANITIZE_STRING);
         $userId = filter_var($userId, FILTER_SANITIZE_STRING);
@@ -233,16 +234,6 @@ class MiniCrmClient implements MiniCrmClientInterface
                 'StatusId' => $statusId
             ],
         ];
-
-        if (!is_null($businessId) && !is_int($businessId)) {
-            throw new MiniCrmClientException(
-                'The business ID you provided is invalid. Please use only numbers.',
-                MiniCrmClientException::WRONG_DATA_PROVIDED
-            );
-        } elseif (!is_null($businessId) && is_int($businessId)) {
-            $data['json']['BusinessId'] = $businessId;
-        }
-
 
         $this->sendPut('/Api/R3/Project', $data);
 
@@ -334,6 +325,82 @@ class MiniCrmClient implements MiniCrmClientInterface
         $body = $this->parseResponse();
 
         return $body;
+    }
+
+    /**
+     * @param string $firstName
+     * @param string $lastName
+     * @param string $email
+     * @param null $phone
+     * @param null $businessId
+     * @return string
+     * @throws MiniCrmClientException
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
+    public function createContact(
+        string $firstName,
+        string $lastName,
+        string $email,
+        $phone = null,
+        $businessId = null
+    ) {
+        $firstName = filter_var($firstName, FILTER_SANITIZE_STRING);
+        $lastName = filter_var($lastName, FILTER_SANITIZE_STRING);
+
+        $data = [
+            'json' => [
+                'Type' => 'Person',
+                'FirstName' => $firstName,
+                'LastName' => $lastName
+            ],
+        ];
+
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            throw new MiniCrmClientException(
+                'Please provide a valid email address.',
+                MiniCrmClientException::WRONG_DATA_PROVIDED
+            );
+        } else {
+            $data['json']['Email'] = $email;
+        }
+
+        if (!preg_match('/^\+[0,9]{0,20}/', $phone)) {
+            throw new MiniCrmClientException(
+                'Please provide a phone number like "+36301234567"',
+                MiniCrmClientException::WRONG_DATA_PROVIDED
+            );
+        } else {
+            $data['json']['Phone'] = $phone;
+        }
+
+        if (!is_null($businessId) && !is_int($businessId)) {
+            throw new MiniCrmClientException(
+                'The business ID you provided is invalid. Please use only numbers.',
+                MiniCrmClientException::WRONG_DATA_PROVIDED
+            );
+        } elseif (!is_null($businessId) && is_int($businessId)) {
+            $data['json']['BusinessId'] = $businessId;
+        } else {
+            $businessId = null;
+        }
+
+        $this->sendPut("/Api/R3/Contact", $data);
+
+        if ($this->response->getStatusCode() !== 200) {
+            $responseContentType = $this->response->getHeader('Content-Type');
+            $responseContentType = end($responseContentType);
+            if ($responseContentType === 'application/json') {
+                $this->parseResponse();
+            }
+            throw new MiniCrmClientException(
+                'Unexpected answer',
+                MiniCrmClientException::UNEXPECTED_ANSWER
+            );
+        } else {
+            $result = 'Contact created.';
+        }
+
+        return $result;
     }
 
     public function isValidDate($date, $format = 'Y-m-d\+H:i:s')
