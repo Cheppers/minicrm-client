@@ -403,6 +403,29 @@ class MiniCrmClient implements MiniCrmClientInterface
         return $result;
     }
 
+    /**
+     * @param int $contactId
+     * @return mixed
+     * @throws MiniCrmClientException
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     *
+     * @todo Handle Exception when searched id couldn't be found.
+     */
+    public function deleteContact(int $contactId)
+    {
+        $this->sendGet("/Api/R3/PurgePerson/{$contactId}");
+        $body = $this->parseResponse();
+
+        if (isset($body['Message'])) {
+            return $body['Message'];
+        } else {
+            throw new MiniCrmClientException(
+                'Unexpected answer. Deletion failed.',
+                MiniCrmClientException::UNEXPECTED_ANSWER
+            );
+        }
+    }
+
     public function isValidDate($date, $format = 'Y-m-d\+H:i:s')
     {
         $dateObj = DateTime::createFromFormat($format, $date);
