@@ -345,6 +345,11 @@ class MiniCrmClient implements MiniCrmClientInterface
                 'Unexpected answer. Could not fetch contact ID',
                 MiniCrmClientException::UNEXPECTED_ANSWER
             );
+        } elseif (empty($body['Results'])) {
+            throw new MiniCrmClientException(
+                "There is no person with the name '{$name}'.",
+                MiniCrmClientException::NO_DATA
+            );
         } else {
             $id = array_key_first($body['Results']);
 
