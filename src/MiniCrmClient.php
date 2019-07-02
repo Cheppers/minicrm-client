@@ -328,6 +328,31 @@ class MiniCrmClient implements MiniCrmClientInterface
     }
 
     /**
+     * @param $name
+     * @return mixed
+     * @throws MiniCrmClientException
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
+    public function getContactId($name)
+    {
+        $name = filter_var($name, FILTER_SANITIZE_STRING);
+
+        $this->sendGet("/Api/R3/Contact?Type=Person&Name={$name}");
+        $body = $this->parseResponse();
+
+        if (!isset($body['Results'])) {
+            throw new MiniCrmClientException(
+                'Unexpected answer. Could not fetch contact ID',
+                MiniCrmClientException::UNEXPECTED_ANSWER
+            );
+        } else {
+            $id = array_key_first($body['Results']);
+
+            return $id;
+        }
+    }
+
+    /**
      * @param string $firstName
      * @param string $lastName
      * @param string $email
