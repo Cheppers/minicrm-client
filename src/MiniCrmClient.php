@@ -174,6 +174,13 @@ class MiniCrmClient implements MiniCrmClientInterface
      */
     public function getProject($categoryId = null, $page = null, $businessId = null)
     {
+        if (is_null($categoryId) && is_null($businessId)) {
+            throw new MiniCrmClientException(
+                'Please use at least 1 parameter (categoryId or businessId) in the request.',
+                MiniCrmClientException::NO_DATA
+            );
+        }
+
         if (!is_null($categoryId) && !is_int($categoryId)) {
             throw new MiniCrmClientException(
                 'The category ID you provided is invalid. Please use only numbers.',
@@ -207,6 +214,7 @@ class MiniCrmClient implements MiniCrmClientInterface
 
         return $body;
     }
+
     /**
      * @param $name
      * @return mixed
@@ -236,7 +244,6 @@ class MiniCrmClient implements MiniCrmClientInterface
             return $id;
         }
     }
-
 
     /**
      * @param string $name
