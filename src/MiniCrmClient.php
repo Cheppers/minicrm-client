@@ -207,6 +207,36 @@ class MiniCrmClient implements MiniCrmClientInterface
 
         return $body;
     }
+    /**
+     * @param $name
+     * @return mixed
+     * @throws MiniCrmClientException
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
+    public function getProjectId($name)
+    {
+        $name = filter_var($name, FILTER_SANITIZE_STRING);
+
+        $this->sendGet("/Api/R3/Project?Name={$name}");
+        $body = $this->parseResponse();
+
+        if (!isset($body['Results'])) {
+            throw new MiniCrmClientException(
+                'Unexpected answer. Could not fetch contact ID',
+                MiniCrmClientException::UNEXPECTED_ANSWER
+            );
+        } elseif (empty($body['Results'])) {
+            throw new MiniCrmClientException(
+                "There is no person with the name '{$name}'.",
+                MiniCrmClientException::NO_DATA
+            );
+        } else {
+            $id = array_key_first($body['Results']);
+
+            return $id;
+        }
+    }
+
 
     /**
      * @param string $name
