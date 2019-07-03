@@ -408,6 +408,59 @@ class MiniCrmClient implements MiniCrmClientInterface
     }
 
     /**
+     * @param string $name
+     * @param string $email
+     * @param string $phone
+     * @return string
+     * @throws MiniCrmClientException
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
+    public function createCompany(
+        string $name,
+        string $email,
+        $phone = ''
+    ) {
+        $name = filter_var($name, FILTER_SANITIZE_STRING);
+
+        $data = [
+            'json' => [
+                'Type' => 'Business',
+                'Name' => $name,
+            ],
+        ];
+
+        $data['json']['Email'] = $this->validateEmail($email);
+
+        // Validate Phone.
+        if (!preg_match('/^\+[0,9]{0,20}/', $phone) && $phone !== '') {
+            throw new MiniCrmClientException(
+                'Please provide a phone number like "+36301234567"',
+                MiniCrmClientException::WRONG_DATA_PROVIDED
+            );
+        } else {
+            $data['json']['Phone'] = $phone;
+        }
+
+        $this->sendPut("/Api/R3/Contact", $data);
+
+        if ($this->response->getStatusCode() !== 200) {
+            $responseContentType = $this->response->getHeader('Content-Type');
+            $responseContentType = end($responseContentType);
+            if ($responseContentType === 'application/json') {
+                $this->parseResponse();
+            }
+            throw new MiniCrmClientException(
+                'Unexpected answer',
+                MiniCrmClientException::UNEXPECTED_ANSWER
+            );
+        } else {
+            $result = 'Company created.';
+        }
+
+        return $result;
+    }
+
+    /**
      * @param string $email
      * @param string $updatedSince
      * @param string $searchString
