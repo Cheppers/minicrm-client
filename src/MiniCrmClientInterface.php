@@ -51,4 +51,21 @@ interface MiniCrmClientInterface
      * @return $this
      */
     public function setBaseUri($baseUri);
+
+    /**
+     * @param array $options
+     * @return $this
+     */
+    public function setOptions(array $options);
+
+    /**
+     * @return int|null
+     */
+    public function id();
+
+    /**
+     * @return mixed
+     * @throws MiniCrmClientException
+     */
+    public function fetch();
 }

@@ -34,6 +34,8 @@ class MiniCrmClient implements MiniCrmClientInterface
      */
     protected $systemId;
 
+    protected $id;
+
     /**
      * {@inheritdoc}
      */
@@ -105,8 +107,7 @@ class MiniCrmClient implements MiniCrmClientInterface
     }
 
     /**
-     * @param array $options
-     * @return $this
+     * {@inheritdoc}
      */
     public function setOptions(array $options)
     {
@@ -128,8 +129,24 @@ class MiniCrmClient implements MiniCrmClientInterface
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function id()
+    {
+        return isset($this->id) ? $this->id : NULL;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function fetch()
+    {
+        return $this->parseResponse();
+    }
+
+    /**
      * @param $type
-     * @return mixed
+     * @return $this
      * @throws MiniCrmClientException
      * @throws \GuzzleHttp\Exception\GuzzleException
      *
@@ -144,39 +161,35 @@ class MiniCrmClient implements MiniCrmClientInterface
             );
         } else {
             $this->sendGet("/Api/R3/Schema/{$type}");
-
-            $body = $this->parseResponse();
-
-            return $body;
         }
+
+        return $this;
     }
 
     /**
-     * @return mixed
-     * @throws MiniCrmClientException
+     * @return $this
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function getCategories()
     {
         $this->sendGet('/Api/R3/Category');
-        $body = $this->parseResponse();
 
-        return $body;
+        return $this;
     }
 
     /**
      * @param null $categoryId
      * @param null $page
      * @param null $businessId
-     * @return mixed
+     * @return $this
      * @throws MiniCrmClientException
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public function getProject($categoryId = null, $page = null, $businessId = null)
+    public function getProject($categoryId = null, $page = null, $businessId = null, $name = null)
     {
         if (is_null($categoryId) && is_null($businessId)) {
             throw new MiniCrmClientException(
-                'Please use at least 1 parameter (categoryId or businessId) in the request.',
+                'Please use at least 1 parameter (either category ID or business ID) in the request.',
                 MiniCrmClientException::NO_DATA
             );
         }
@@ -209,10 +222,17 @@ class MiniCrmClient implements MiniCrmClientInterface
             $vBusinessId = '';
         }
 
-        $this->sendGet("/Api/R3/Project?{$vCategoryId}{$vPage}{$vBusinessId}");
-        $body = $this->parseResponse();
+        if (!is_null($name)) {
+            $name = filter_var($name, FILTER_SANITIZE_STRING);
+            $vName = "&Name={$name}";
+            $this->id = $this->getProjectId($name);
+        } else {
+            $vName = '';
+        }
 
-        return $body;
+        $this->sendGet("/Api/R3/Project?{$vCategoryId}{$vPage}{$vBusinessId}{$vName}");
+
+        return $this;
     }
 
     /**
@@ -240,9 +260,9 @@ class MiniCrmClient implements MiniCrmClientInterface
             );
         } else {
             $id = array_key_first($body['Results']);
-
-            return $id;
         }
+
+        return $id;
     }
 
     /**
@@ -296,7 +316,7 @@ class MiniCrmClient implements MiniCrmClientInterface
      * @param null $updatedSince
      * @param null $searchString
      * @param int|null $businessId
-     * @return mixed
+     * @return $this
      * @throws MiniCrmClientException
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
@@ -358,23 +378,30 @@ class MiniCrmClient implements MiniCrmClientInterface
             $vBusinessId = '';
         }
 
+        $this->id = $this->getContactId($vEmail);
         $this->sendGet("/Api/R3/Contact?Email={$vEmail}&UpdatedSince={$vUpdatedSince}{$vSearchString}{$vBusinessId}");
-        $body = $this->parseResponse();
 
-        return $body;
+        return $this;
     }
 
     /**
-     * @param $name
-     * @return mixed
+     * @param $email
+     * @return $this
      * @throws MiniCrmClientException
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public function getContactId($name)
+    public function getContactId($email)
     {
-        $name = filter_var($name, FILTER_SANITIZE_STRING);
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            throw new MiniCrmClientException(
+                'Could not fetch ID from the given data.',
+                MiniCrmClientException::WRONG_DATA_PROVIDED
+            );
+        } else {
+            $email = filter_var($email, FILTER_SANITIZE_EMAIL);
+        }
 
-        $this->sendGet("/Api/R3/Contact?Type=Person&Name={$name}");
+        $this->sendGet("/Api/R3/Contact?Type=Person&Email={$email}");
         $body = $this->parseResponse();
 
         if (!isset($body['Results'])) {
@@ -384,14 +411,14 @@ class MiniCrmClient implements MiniCrmClientInterface
             );
         } elseif (empty($body['Results'])) {
             throw new MiniCrmClientException(
-                "There is no person with the name '{$name}'.",
+                "There is no person with the email address '{$email}'.",
                 MiniCrmClientException::NO_DATA
             );
         } else {
             $id = array_key_first($body['Results']);
-
-            return $id;
         }
+
+        return $id;
     }
 
     /**
