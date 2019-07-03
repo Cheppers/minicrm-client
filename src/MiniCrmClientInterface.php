@@ -59,7 +59,8 @@ interface MiniCrmClientInterface
     public function setOptions(array $options);
 
     /**
-     * @return int|null
+     * @return int|MiniCrmClientException
+     * @throws MiniCrmClientException
      */
     public function id();
 

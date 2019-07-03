@@ -6,6 +6,7 @@ namespace Cheppers\MiniCrm;
 
 use DateTime;
 use GuzzleHttp\ClientInterface;
+use GuzzleHttp\Exception\ClientException;
 
 class MiniCrmClient implements MiniCrmClientInterface
 {
@@ -133,7 +134,14 @@ class MiniCrmClient implements MiniCrmClientInterface
      */
     public function id()
     {
-        return isset($this->id) ? $this->id : NULL;
+        if (!isset($this->id)) {
+            throw new MiniCrmClientException(
+                'No ID found. Check if the data you want to get the ID from exists, or be more specific.',
+                MiniCrmClientException::NO_DATA
+            );
+        } else {
+            return $this->id;
+        }
     }
 
     /**
@@ -178,29 +186,30 @@ class MiniCrmClient implements MiniCrmClientInterface
     }
 
     /**
-     * @param null $categoryId
+     * @param null $projectId
      * @param null $page
      * @param null $businessId
+     * @param string $name
      * @return $this
      * @throws MiniCrmClientException
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public function getProject($categoryId = null, $page = null, $businessId = null, $name = null)
+    public function getPartner($projectId = null, $page = null, $businessId = null, $name = '')
     {
-        if (is_null($categoryId) && is_null($businessId)) {
+        if (is_null($projectId) && is_null($businessId)) {
             throw new MiniCrmClientException(
-                'Please use at least 1 parameter (either category ID or business ID) in the request.',
+                'Please use at least 1 parameter (either project ID or business ID) in the request.',
                 MiniCrmClientException::NO_DATA
             );
         }
 
-        if (!is_null($categoryId) && !is_int($categoryId)) {
+        if (!is_null($projectId) && !is_int($projectId)) {
             throw new MiniCrmClientException(
                 'The category ID you provided is invalid. Please use only numbers.',
                 MiniCrmClientException::WRONG_DATA_PROVIDED
             );
-        } elseif (!is_null($categoryId) && is_int($categoryId)) {
-            $vCategoryId = "&CategoryId={$categoryId}";
+        } elseif (!is_null($projectId) && is_int($projectId)) {
+            $vCategoryId = "&CategoryId={$projectId}";
         } else {
             $vCategoryId = '';
         }
@@ -222,10 +231,10 @@ class MiniCrmClient implements MiniCrmClientInterface
             $vBusinessId = '';
         }
 
-        if (!is_null($name)) {
+        if ($name !== '') {
             $name = filter_var($name, FILTER_SANITIZE_STRING);
             $vName = "&Name={$name}";
-            $this->id = $this->getProjectId($name);
+            $this->id = $this->getPartnerId($name);
         } else {
             $vName = '';
         }
@@ -241,7 +250,7 @@ class MiniCrmClient implements MiniCrmClientInterface
      * @throws MiniCrmClientException
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public function getProjectId($name)
+    public function getPartnerId($name)
     {
         $name = filter_var($name, FILTER_SANITIZE_STRING);
 
@@ -268,7 +277,7 @@ class MiniCrmClient implements MiniCrmClientInterface
     /**
      * @param string $name
      * @param string $userId
-     * @param int $categoryId
+     * @param int $projectId
      * @param int $contactId
      * @param int $statusId
      * @return string
@@ -277,7 +286,7 @@ class MiniCrmClient implements MiniCrmClientInterface
      *
      * You can attach a business to a partner (contact) which can be attached to a project.
      */
-    public function createProject(string $name, string $userId, int $categoryId, int $contactId, int $statusId)
+    public function createPartner(string $name, string $userId, int $projectId, int $contactId, int $statusId)
     {
         $name = filter_var($name, FILTER_SANITIZE_STRING);
         $userId = filter_var($userId, FILTER_SANITIZE_STRING);
@@ -286,7 +295,7 @@ class MiniCrmClient implements MiniCrmClientInterface
             'json' => [
                 'Name' => $name,
                 'UserId' => $userId,
-                'CategoryId' => $categoryId,
+                'CategoryId' => $projectId,
                 'ContactId' => $contactId,
                 'StatusId' => $statusId
             ],
@@ -305,51 +314,121 @@ class MiniCrmClient implements MiniCrmClientInterface
                 MiniCrmClientException::UNEXPECTED_ANSWER
             );
         } else {
-            $result = 'Project created.';
+            $result = 'Partner created.';
         }
 
         return $result;
     }
 
     /**
-     * @param null $email
-     * @param null $updatedSince
-     * @param null $searchString
+     * @param null $businessId
+     * @param string $name
+     * @param string $email
+     * @param string $phone
+     * @return $this
+     * @throws MiniCrmClientException
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
+    public function getCompany(
+        string $email,
+        $businessId = null,
+        $name = '',
+        $phone = ''
+    ) {
+        // Check if any parameter is provided or all of them are NULL or empty string.
+        if (is_null($businessId) && $name !== '' && $email !== '' && is_null($phone)) {
+            throw new MiniCrmClientException(
+                'Please provide at least 1 parameter we can search for.',
+                MiniCrmClientException::NO_DATA
+            );
+        }
+
+        // Validate ID.
+        if (!is_null($businessId) && !is_int($businessId)) {
+            throw new MiniCrmClientException(
+                'The business ID you provided is invalid. Please use only numbers.',
+                MiniCrmClientException::WRONG_DATA_PROVIDED
+            );
+        } elseif (!is_null($businessId) && is_int($businessId)) {
+            $vBusinessId = "&Id={$businessId}";
+        } else {
+            $vBusinessId = '';
+        }
+
+        //Sanitize $name
+        $vName = filter_var($name, FILTER_SANITIZE_STRING);
+
+        $email = $this->validateEmail($email);
+        $vEmail = "&Email={$email}";
+
+        // Validate Phone.
+        if (!preg_match('/^\+[0,9]{0,20}/', $phone) && $phone !== '') {
+            throw new MiniCrmClientException(
+                'Please provide a phone number like "+36301234567"',
+                MiniCrmClientException::WRONG_DATA_PROVIDED
+            );
+        } else {
+            $vPhone = $phone;
+        }
+
+        $this->id = $this->getCompanyId($vEmail);
+        $this->sendGet("/Api/R3/Contact?Type=Business{$vBusinessId}{$vName}{$vEmail}{$vPhone}");
+
+        return $this;
+    }
+
+    /**
+     * @param $email
+     * @return int|mixed|string
+     * @throws MiniCrmClientException
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
+    public function getCompanyId($email)
+    {
+        $email = $this->validateEmail($email);
+
+        $this->sendGet("/Api/R3/Contact?Type=Business&Email={$email}");
+        $body = $this->parseResponse();
+
+        if (!isset($body['Results'])) {
+            throw new MiniCrmClientException(
+                'Unexpected answer. Could not fetch contact ID',
+                MiniCrmClientException::UNEXPECTED_ANSWER
+            );
+        } elseif (empty($body['Results'])) {
+            throw new MiniCrmClientException(
+                "There is no person with the email address '{$email}'.",
+                MiniCrmClientException::NO_DATA
+            );
+        } else {
+            $id = array_key_first($body['Results']);
+        }
+
+        return $id;
+    }
+
+    /**
+     * @param string $email
+     * @param string $updatedSince
+     * @param string $searchString
      * @param int|null $businessId
      * @return $this
      * @throws MiniCrmClientException
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function getContact(
-        $email = null,
-        $updatedSince = null,
-        $searchString = null,
+        string $email,
+        $updatedSince = '',
+        $searchString = '',
         $businessId = null
     ) {
-        // Check if any parameter is provided or all of them are NULL.
-        if (is_null($email) && is_null($updatedSince) && is_null($searchString) && is_null($businessId)) {
-            throw new MiniCrmClientException(
-                'Please provide at least 1 parameter to search for.',
-                MiniCrmClientException::NO_DATA
-            );
-        }
-
-        // Validate E-mail address.
-        if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            $vEmail = $email;
-        } elseif (is_null($email)) {
-            $vEmail = '';
-        } else {
-            throw new MiniCrmClientException(
-                'The provided email is not valid. Please use a valid e-mail address.',
-                MiniCrmClientException::WRONG_DATA_PROVIDED
-            );
-        }
+        $email = $this->validateEmail($email);
+        $vEmail = "&Email={$email}";
 
         // Validate Update Date.
-        if (!is_null($updatedSince)) {
+        if ($updatedSince !== '') {
             if ($this->isValidDate($updatedSince)) {
-                $vUpdatedSince = $updatedSince;
+                $vUpdatedSince = "&UpdatedSince={$updatedSince}";
             } else {
                 throw new MiniCrmClientException(
                     'The provided update date is invalid. Please use the \'2012-12-12+12:12:12\' format.',
@@ -361,12 +440,13 @@ class MiniCrmClient implements MiniCrmClientInterface
         }
 
         // Sanitize search string.
-        if (!is_null($searchString)) {
+        if ($searchString !== '') {
             $vSearchString = '&Query=' . filter_var($searchString, FILTER_SANITIZE_STRING);
         } else {
             $vSearchString = '';
         }
 
+        // Validate business ID.
         if (!is_null($businessId) && !is_int($businessId)) {
             throw new MiniCrmClientException(
                 'The business ID you provided is invalid. Please use only numbers.',
@@ -379,7 +459,7 @@ class MiniCrmClient implements MiniCrmClientInterface
         }
 
         $this->id = $this->getContactId($vEmail);
-        $this->sendGet("/Api/R3/Contact?Email={$vEmail}&UpdatedSince={$vUpdatedSince}{$vSearchString}{$vBusinessId}");
+        $this->sendGet("/Api/R3/Contact?Type=Person{$vEmail}{$vUpdatedSince}{$vSearchString}{$vBusinessId}");
 
         return $this;
     }
@@ -392,14 +472,7 @@ class MiniCrmClient implements MiniCrmClientInterface
      */
     public function getContactId($email)
     {
-        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            throw new MiniCrmClientException(
-                'Could not fetch ID from the given data.',
-                MiniCrmClientException::WRONG_DATA_PROVIDED
-            );
-        } else {
-            $email = filter_var($email, FILTER_SANITIZE_EMAIL);
-        }
+        $email = $this->validateEmail($email);
 
         $this->sendGet("/Api/R3/Contact?Type=Person&Email={$email}");
         $body = $this->parseResponse();
@@ -435,7 +508,7 @@ class MiniCrmClient implements MiniCrmClientInterface
         string $firstName,
         string $lastName,
         string $email,
-        $phone = null,
+        $phone = '',
         $businessId = null
     ) {
         $firstName = filter_var($firstName, FILTER_SANITIZE_STRING);
@@ -449,16 +522,10 @@ class MiniCrmClient implements MiniCrmClientInterface
             ],
         ];
 
-        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            throw new MiniCrmClientException(
-                'Please provide a valid email address.',
-                MiniCrmClientException::WRONG_DATA_PROVIDED
-            );
-        } else {
-            $data['json']['Email'] = $email;
-        }
+        $data['json']['Email'] = $this->validateEmail($email);
 
-        if (!preg_match('/^\+[0,9]{0,20}/', $phone)) {
+        // Validate Phone.
+        if (!preg_match('/^\+[0,9]{0,20}/', $phone) && $phone !== '') {
             throw new MiniCrmClientException(
                 'Please provide a phone number like "+36301234567"',
                 MiniCrmClientException::WRONG_DATA_PROVIDED
@@ -502,12 +569,18 @@ class MiniCrmClient implements MiniCrmClientInterface
      * @return mixed
      * @throws MiniCrmClientException
      * @throws \GuzzleHttp\Exception\GuzzleException
-     *
-     * @todo Handle Exception when searched id couldn't be found.
      */
     public function deleteContact(int $contactId)
     {
-        $this->sendGet("/Api/R3/PurgePerson/{$contactId}");
+        try {
+            $this->sendGet("/Api/R3/PurgePerson/{$contactId}");
+        } catch (ClientException $e) {
+            throw new MiniCrmClientException(
+                'Contact could not be deleted. It is either not exist, or already has been deleted.',
+                MiniCrmClientException::UNEXPECTED_ANSWER
+            );
+        }
+
         $body = $this->parseResponse();
 
         if (isset($body['Message'])) {
@@ -520,10 +593,32 @@ class MiniCrmClient implements MiniCrmClientInterface
         }
     }
 
+    /**
+     * @param $date
+     * @param string $format
+     * @return bool
+     */
     public function isValidDate($date, $format = 'Y-m-d\+H:i:s')
     {
         $dateObj = DateTime::createFromFormat($format, $date);
         return $dateObj && $dateObj->format($format) == $date;
+    }
+
+    /**
+     * @param $email
+     * @return mixed
+     * @throws MiniCrmClientException
+     */
+    public function validateEmail($email)
+    {
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            throw new MiniCrmClientException(
+                'Please provide a valid email address.',
+                MiniCrmClientException::WRONG_DATA_PROVIDED
+            );
+        }
+
+        return filter_var($email, FILTER_SANITIZE_EMAIL);
     }
 
     /**
