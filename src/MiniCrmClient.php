@@ -252,9 +252,10 @@ class MiniCrmClient implements MiniCrmClientInterface
      */
     public function getPartnerId($name)
     {
-        $name = filter_var($name, FILTER_SANITIZE_STRING);
+        $sanitizedName = filter_var($name, FILTER_SANITIZE_STRING);
+        $encodedName = $this->urlEncode($sanitizedName);
 
-        $this->sendGet("/Api/R3/Project?Name={$name}");
+        $this->sendGet("/Api/R3/Project?Name={$encodedName}");
         $body = $this->parseResponse();
 
         if (!isset($body['Results'])) {
@@ -264,7 +265,7 @@ class MiniCrmClient implements MiniCrmClientInterface
             );
         } elseif (empty($body['Results'])) {
             throw new MiniCrmClientException(
-                "There is no person with the name '{$name}'.",
+                "There is no person with the name '{$encodedName}'.",
                 MiniCrmClientException::NO_DATA
             );
         } else {
@@ -647,6 +648,53 @@ class MiniCrmClient implements MiniCrmClientInterface
     }
 
     /**
+     * @param int $partnerId
+     * @param string $comment
+     * @param int $deadline
+     * Tell in hours the deadline. E.g. '72' means +72 hours from the submission.
+     * @param string $userId
+     * @return string
+     * @throws MiniCrmClientException
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
+    public function createToDo(
+        int $partnerId,
+        string $comment,
+        int $deadline,
+        string $userId
+    ) {
+        $comment = filter_var($comment, FILTER_SANITIZE_STRING);
+        $userId = filter_var($userId, FILTER_SANITIZE_STRING);
+
+        $data = [
+            'json' => [
+                'ProjectId' => $partnerId,
+                'Comment' => $comment,
+                'Deadline' => date('Y-m-d H:i:s', strtotime("+{$deadline} hours")),
+                'UserId' => $userId
+            ],
+        ];
+
+        $this->sendPut("/Api/R3/ToDo", $data);
+
+        if ($this->response->getStatusCode() !== 200) {
+            $responseContentType = $this->response->getHeader('Content-Type');
+            $responseContentType = end($responseContentType);
+            if ($responseContentType === 'application/json') {
+                $this->parseResponse();
+            }
+            throw new MiniCrmClientException(
+                'Unexpected answer',
+                MiniCrmClientException::UNEXPECTED_ANSWER
+            );
+        } else {
+            $result = 'ToDo created.';
+        }
+
+        return $result;
+    }
+
+    /**
      * @param $date
      * @param string $format
      * @return bool
@@ -672,6 +720,18 @@ class MiniCrmClient implements MiniCrmClientInterface
         }
 
         return filter_var($email, FILTER_SANITIZE_EMAIL);
+    }
+
+    /**
+     * @param $string
+     *
+     * @return mixed
+     */
+    public function urlEncode($string) {
+        $entities = ['%21', '%2A', '%27', '%28', '%29', '%3B', '%3A', '%40', '%26', '%3D', '%2B', '%24', '%2C', '%2F', '%3F', '%25', '%23', '%5B', '%5D'];
+        $replacements = ['!', '*', "'", "(", ")", ";", ":", "@", "&", "=", "+", "$", ",", "/", "?", "%", "#", "[", "]"];
+
+        return urlencode(str_replace($entities, $replacements, $string));
     }
 
     /**
