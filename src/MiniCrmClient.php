@@ -276,7 +276,14 @@ class MiniCrmClient implements MiniCrmClientInterface
                 MiniCrmClientException::NO_DATA
             );
         } else {
-            $id = array_key_first($body['Results']);
+
+            if (function_exists('array_key_first')) {
+                $id = array_key_first($body['Results']);
+            }
+            else {
+                reset($body['Results']);
+                $id = key($body['Results']);
+            }
         }
 
         return $id;
@@ -409,7 +416,13 @@ class MiniCrmClient implements MiniCrmClientInterface
                 MiniCrmClientException::NO_DATA
             );
         } else {
-            $id = array_key_first($body['Results']);
+            if (function_exists('array_key_first')) {
+                $id = array_key_first($body['Results']);
+            }
+            else {
+                reset($body['Results']);
+                $id = key($body['Results']);
+            }
         }
 
         return $id;
@@ -549,7 +562,14 @@ class MiniCrmClient implements MiniCrmClientInterface
                 MiniCrmClientException::NO_DATA
             );
         } else {
-            $id = array_key_first($body['Results']);
+
+            if (function_exists('array_key_first')) {
+                $id = array_key_first($body['Results']);
+            }
+            else {
+                reset($body['Results']);
+                $id = key($body['Results']);
+            }
         }
 
         return $id;
