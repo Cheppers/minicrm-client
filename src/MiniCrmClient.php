@@ -130,6 +130,13 @@ class MiniCrmClient implements MiniCrmClientInterface
     }
 
     /**
+     * @return string
+     */
+    public function getCredentials()
+    {
+        return base64_encode($this->systemId . ':' . $this->apiKey);
+    }
+    /**
      * {@inheritdoc}
      */
     public function id()
