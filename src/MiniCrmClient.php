@@ -201,7 +201,7 @@ class MiniCrmClient implements MiniCrmClientInterface
      * @throws MiniCrmClientException
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public function getPartner($projectId = null, $page = null, $businessId = null, $name = '')
+    public function getPartner($name = '', $projectId = null, $businessId = null, $page = null)
     {
         if (is_null($projectId) && is_null($businessId)) {
             throw new MiniCrmClientException(
