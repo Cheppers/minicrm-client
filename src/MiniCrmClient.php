@@ -586,7 +586,7 @@ class MiniCrmClient implements MiniCrmClientInterface
      * @param string $firstName
      * @param string $lastName
      * @param string $email
-     * @param null $phone
+     * @param string $phone
      * @param null $businessId
      * @return string
      * @throws MiniCrmClientException
