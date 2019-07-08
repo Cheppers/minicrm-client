@@ -371,7 +371,12 @@ class MiniCrmClient implements MiniCrmClientInterface
         }
 
         //Sanitize $name
-        $vName = filter_var($name, FILTER_SANITIZE_STRING);
+        $filteredName = filter_var($name, FILTER_SANITIZE_STRING);
+        if ($name !== '') {
+            $vName = "&Name={$filteredName}";
+        } else {
+            $vName = '';
+        }
 
         $email = $this->validateEmail($email);
         $vEmail = "&Email={$email}";
@@ -438,7 +443,7 @@ class MiniCrmClient implements MiniCrmClientInterface
      */
     public function createCompany(
         string $name,
-        string $email,
+        $email = '',
         $phone = ''
     ) {
         $name = filter_var($name, FILTER_SANITIZE_STRING);
@@ -450,7 +455,9 @@ class MiniCrmClient implements MiniCrmClientInterface
             ],
         ];
 
-        $data['json']['Email'] = $this->validateEmail($email);
+        if ($email !== '') {
+            $data['json']['Email'] = $this->validateEmail($email);
+        }
 
         // Validate Phone.
         if (!preg_match('/^\+[0,9]{0,20}/', $phone) && $phone !== '') {
