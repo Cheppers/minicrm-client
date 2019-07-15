@@ -403,11 +403,12 @@ class MiniCrmClient implements MiniCrmClientInterface
      * @throws MiniCrmClientException
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public function getCompanyId($email)
+    public function getCompanyId($company)
     {
-        $email = $this->validateEmail($email);
+        $company = filter_var($company, FILTER_SANITIZE_STRING);
+        $encodedCompany = $this->urlEncode($company);
 
-        $this->sendGet("/Api/R3/Contact?Type=Business&Email={$email}");
+        $this->sendGet("/Api/R3/Contact?Type=Business&Name={$encodedCompany}");
         $body = $this->parseResponse();
 
         if (!isset($body['Results'])) {
@@ -417,7 +418,7 @@ class MiniCrmClient implements MiniCrmClientInterface
             );
         } elseif (empty($body['Results'])) {
             throw new MiniCrmClientException(
-                "There is no person with the email address '{$email}'.",
+                "There is no company with the name address '{$encodedCompany}'.",
                 MiniCrmClientException::NO_DATA
             );
         } else {
