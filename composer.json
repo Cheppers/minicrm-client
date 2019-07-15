@@ -2,7 +2,7 @@
     "name": "cheppers/minicrm-client",
     "description": "MiniCRM client",
     "type": "library",
-    "license": "GPL-2.0+",
+    "license": "GPL-2.0-or-later",
     "minimum-stability": "dev",
     "prefer-stable": true,
     "config": {
@@ -34,7 +34,7 @@
     "autoload-dev": {
         "psr-4": {
             "Cheppers\\MiniCrm\\Composer\\": "src-dev/Composer",
-            "Cheppers\\MiniCrm\\Tests\\": "src-dev/Tests"
+            "Cheppers\\MiniCrm\\Test\\": "src-dev/Test"
         }
     },
     "scripts": {}
