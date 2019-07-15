@@ -337,7 +337,7 @@ class MiniCrmClient implements MiniCrmClientInterface
 
     /**
      * @param null $businessId
-     * @param string $name
+     * @param string $company
      * @param string $email
      * @param string $phone
      * @return $this
@@ -345,13 +345,13 @@ class MiniCrmClient implements MiniCrmClientInterface
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function getCompany(
-        string $email,
+        string $company,
         $businessId = null,
-        $name = '',
+        $email = '',
         $phone = ''
     ) {
         // Check if any parameter is provided or all of them are NULL or empty string.
-        if (is_null($businessId) && $name !== '' && $email !== '' && is_null($phone)) {
+        if (is_null($businessId) && $company !== '' && $email !== '' && is_null($phone)) {
             throw new MiniCrmClientException(
                 'Please provide at least 1 parameter we can search for.',
                 MiniCrmClientException::NO_DATA
@@ -371,15 +371,24 @@ class MiniCrmClient implements MiniCrmClientInterface
         }
 
         //Sanitize $name
-        $filteredName = filter_var($name, FILTER_SANITIZE_STRING);
-        if ($name !== '') {
-            $vName = "&Name={$filteredName}";
+        $company = filter_var($company, FILTER_SANITIZE_STRING);
+        $encodedCompany = $this->urlEncode($company);
+
+        if ($company !== '') {
+            $vName = "&Name={$encodedCompany}";
         } else {
-            $vName = '';
+            throw new MiniCrmClientException(
+                'Please provide the company name.',
+                MiniCrmClientException::WRONG_DATA_PROVIDED
+            );
         }
 
-        $email = $this->validateEmail($email);
-        $vEmail = "&Email={$email}";
+        if ($email !== '') {
+            $email = $this->validateEmail($email);
+            $vEmail = "&Email={$email}";
+        } else {
+            $vEmail = '';
+        }
 
         // Validate Phone.
         if (!preg_match('/^\+[0,9]{0,20}/', $phone) && $phone !== '') {
@@ -391,7 +400,7 @@ class MiniCrmClient implements MiniCrmClientInterface
             $vPhone = $phone;
         }
 
-        $this->id = $this->getCompanyId($vEmail);
+        $this->id = $this->getCompanyId($encodedCompany);
         $this->sendGet("/Api/R3/Contact?Type=Business{$vBusinessId}{$vName}{$vEmail}{$vPhone}");
 
         return $this;
@@ -418,7 +427,7 @@ class MiniCrmClient implements MiniCrmClientInterface
             );
         } elseif (empty($body['Results'])) {
             throw new MiniCrmClientException(
-                "There is no company with the name address '{$encodedCompany}'.",
+                "There is no company with the name '{$encodedCompany}'.",
                 MiniCrmClientException::NO_DATA
             );
         } else {
