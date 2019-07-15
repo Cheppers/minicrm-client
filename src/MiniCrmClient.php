@@ -276,11 +276,9 @@ class MiniCrmClient implements MiniCrmClientInterface
                 MiniCrmClientException::NO_DATA
             );
         } else {
-
             if (function_exists('array_key_first')) {
                 $id = array_key_first($body['Results']);
-            }
-            else {
+            } else {
                 reset($body['Results']);
                 $id = key($body['Results']);
             }
@@ -433,8 +431,7 @@ class MiniCrmClient implements MiniCrmClientInterface
         } else {
             if (function_exists('array_key_first')) {
                 $id = array_key_first($body['Results']);
-            }
-            else {
+            } else {
                 reset($body['Results']);
                 $id = key($body['Results']);
             }
@@ -579,11 +576,9 @@ class MiniCrmClient implements MiniCrmClientInterface
                 MiniCrmClientException::NO_DATA
             );
         } else {
-
             if (function_exists('array_key_first')) {
                 $id = array_key_first($body['Results']);
-            }
-            else {
+            } else {
                 reset($body['Results']);
                 $id = key($body['Results']);
             }
@@ -771,8 +766,29 @@ class MiniCrmClient implements MiniCrmClientInterface
      *
      * @return mixed
      */
-    public function urlEncode($string) {
-        $entities = ['%21', '%2A', '%27', '%28', '%29', '%3B', '%3A', '%40', '%26', '%3D', '%2B', '%24', '%2C', '%2F', '%3F', '%25', '%23', '%5B', '%5D'];
+    public function urlEncode($string)
+    {
+        $entities = [
+            '%21',
+            '%2A',
+            '%27',
+            '%28',
+            '%29',
+            '%3B',
+            '%3A',
+            '%40',
+            '%26',
+            '%3D',
+            '%2B',
+            '%24',
+            '%2C',
+            '%2F',
+            '%3F',
+            '%25',
+            '%23',
+            '%5B',
+            '%5D'
+        ];
         $replacements = ['!', '*', "'", "(", ")", ";", ":", "@", "&", "=", "+", "$", ",", "/", "?", "%", "#", "[", "]"];
 
         return urlencode(str_replace($entities, $replacements, $string));

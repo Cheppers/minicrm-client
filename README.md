@@ -19,6 +19,8 @@ You will need:
 ```
 <?php
 
+require __DIR__ . '/vendor/autoload.php';
+
 $systemId = 'YOUR_SYSTEM_ID';
 $apiKey = 'YOUR_API_KEY';
 $baseUri = 'YOUR_URL';
@@ -32,7 +34,7 @@ $miniCrm->setOptions([
 ]);
 
 try {
-    $categories = $miniCrm->getCategories();
+    $categories = $miniCrm->getCategories()->fetch();
 }
 catch (\Cheppers\MiniCrm\MiniCrmClientException $e) {
     echo 'ERROR: ' . $e->getMessage() . PHP_EOL;
