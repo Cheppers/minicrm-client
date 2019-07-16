@@ -33,8 +33,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Cheppers\\MiniCrm\\Composer\\": "src-dev/Composer",
-            "Cheppers\\MiniCrm\\Test\\": "src-dev/Test"
+            "Cheppers\\MiniCrm\\Tests\\": "tests/src"
         }
     },
     "scripts": {}

@@ -7,5 +7,5 @@
     <rule ref="PSR2"/>
 
     <file>./src/</file>
-    <file>./src-dev/Test/Unit/</file>
+    <file>./tests/src/Unit/</file>
 </ruleset>
