@@ -6,12 +6,6 @@ namespace Cheppers\MiniCrm\Tests\Unit;
 
 use Cheppers\MiniCrm\MiniCrmClient;
 use GuzzleHttp\Client;
-use GuzzleHttp\Exception\RequestException;
-use GuzzleHttp\Handler\MockHandler;
-use GuzzleHttp\HandlerStack;
-use GuzzleHttp\Middleware;
-use GuzzleHttp\Psr7\Request;
-use GuzzleHttp\Psr7\Response;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -74,121 +68,42 @@ class MiniCrmClientTest extends TestCase
         static::assertEquals(1234, $this->client->getSystemId());
     }
 
-    public function casesCategories()
-    {
-        $data = [
-            'category1',
-            'category2',
-            'category3',
-        ];
 
+    public function casesCredentials()
+    {
         return [
-            'basic' => [
-                $data,
-                ['Results' => $data],
+            'credential-1' => [
+                [
+                    'systemid' => 'systemid',
+                    'apikey' => 'apikey',
+                ],
+                'c3lzdGVtaWQ6YXBpa2V5',
+            ],
+            'credential-2' => [
+                [
+                    'systemid' => '12345',
+                    'apikey' => '3EiTVRS9WCHuqjZm6c0Ov8nROxGtW7LL',
+                ],
+                'MTIzNDU6M0VpVFZSUzlXQ0h1cWpabTZjME92OG5ST3hHdFc3TEw=',
+            ],
+            'credential-3' => [
+                [
+                    'systemid' => '98765',
+                    'apikey' => '9Lsc3OrDqBeehFCtfRiDhtay881YVCft',
+                ],
+                'OTg3NjU6OUxzYzNPckRxQmVlaEZDdGZSaURodGF5ODgxWVZDZnQ=',
             ],
         ];
     }
 
     /**
-     * @dataProvider casesCategories
+     * @dataProvider casesCredentials
      */
-    public function testCategoriesGet(array $expected, array $responseBody)
+    public function testGetCredentials(array $credentials, string $expected)
     {
-        $container = [];
-        $history = Middleware::history($container);
-        $mock = new MockHandler([
-            new Response(
-                200,
-                ['Content-Type' => 'application/json; charset=utf-8'],
-                \GuzzleHttp\json_encode($responseBody)
-            ),
-            new RequestException(
-                'Error communicating with server.',
-                new Request('GET', '/Api/R3/Category')
-            )
-        ]);
-        $handlerStack = HandlerStack::create($mock);
-        $handlerStack->push($history);
+        $this->client->setSystemId($credentials['systemid']);
+        $this->client->setApiKey($credentials['apikey']);
 
-        $client = new Client([
-            'handler' => $handlerStack,
-        ]);
-
-        $categories = (new MiniCrmClient($client))
-            ->setOptions($this->clientOptions)
-            ->getCategories()
-            ->fetch();
-
-        if ($expected) {
-            static::assertEquals(
-                json_encode($expected, JSON_PRETTY_PRINT),
-                json_encode($categories['Results'], JSON_PRETTY_PRINT)
-            );
-        } else {
-            static::assertNull($categories);
-        }
-
-        /** @var Request $request */
-        $request = $container[0]['request'];
-        static::assertEquals(1, count($container));
-        static::assertEquals('GET', $request->getMethod());
-        static::assertEquals(['application/json'], $request->getHeader('Content-Type'));
-        static::assertEquals(
-            "{$this->clientOptions['baseUri']}/Api/R3/Category",
-            (string) $request->getUri()
-        );
-    }
-
-    public function casesCategoriesFail()
-    {
-        return [
-            'unauthorized' => [
-                [
-                    'class' => \Exception::class,
-                    'code' => 401,
-                    'msg' => '401 Unauthorized',
-                ],
-                [
-                    'code' => 401,
-                    'headers' => ['Content-Type' => 'application/json'],
-                    'body' => '401 Unauthorized',
-                ],
-            ],
-        ];
-    }
-
-    /**
-     * @dataProvider casesCategoriesFail
-     */
-    public function testCategoriesFail(array $expected, array $response)
-    {
-        $container = [];
-        $history = Middleware::history($container);
-        $mock = new MockHandler([
-            new Response(
-                $response['code'],
-                $response['headers'],
-                \GuzzleHttp\json_encode($response['body'])
-            ),
-            new RequestException(
-                'Error Communicating with Server',
-                new Request('GET', '/Api/R3/Category')
-            )
-        ]);
-        $handlerStack = HandlerStack::create($mock);
-        $handlerStack->push($history);
-        $client = new Client([
-            'handler' => $handlerStack,
-        ]);
-
-        $categories = (new MiniCrmClient($client))
-            ->setOptions($this->clientOptions);
-
-        static::expectException($expected['class']);
-        static::expectExceptionCode($expected['code']);
-        static::expectExceptionMessage($expected['msg']);
-
-        $categories->getCategories()->fetch();
+        static::assertSame($expected, $this->client->getCredentials());
     }
 }
