@@ -45,8 +45,8 @@ class MiniCrmClientSchemaTest extends TestCase
     public function casesSchema()
     {
         $data = [
-            "EmailType" => "Text(1024)",
-            "PhoneType" => "Text(1024)",
+            'EmailType' => 'Text(1024)',
+            'PhoneType' => 'Text(1024)',
         ];
 
         return [
