@@ -398,7 +398,7 @@ class MiniCrmClient implements MiniCrmClientInterface
             $vPhone = $phone;
         }
 
-        $this->id = $this->getCompanyId($encodedCompany);
+        $this->id = $this->getCompanyId($company);
         $this->sendGet("/Api/R3/Contact?Type=Business{$vBusinessId}{$vName}{$vEmail}{$vPhone}");
 
         return $this;
