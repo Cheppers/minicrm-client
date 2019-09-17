@@ -1,0 +1,6 @@
+/bin/
+/reports/
+/vendor/
+
+/phpcs.xml.dist
+/phpunit.xml.dist
