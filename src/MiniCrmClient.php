@@ -233,4 +233,20 @@ class MiniCrmClient implements MiniCrmClientInterface
     {
         return json_decode($response->getBody()->getContents(), true);
     }
+
+    /**
+     * @param $response
+     *
+     * @return array
+     */
+    protected function validateAndParseResponse($response): array
+    {
+        try {
+            $this->validateResponse($response);
+        } catch (\Exception $e) {
+            $this->logger->error($e->getMessage());
+        }
+
+        return $this->parseResponse($response);
+    }
 }
