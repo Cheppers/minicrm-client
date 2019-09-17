@@ -5,6 +5,9 @@ declare(strict_types = 1);
 namespace Cheppers\MiniCrm;
 
 use GuzzleHttp\ClientInterface;
+use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Exception\GuzzleException;
+use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
 
 class MiniCrmClient implements MiniCrmClientInterface
@@ -121,5 +124,76 @@ class MiniCrmClient implements MiniCrmClientInterface
         }
 
         return $this;
+    }
+
+    /**
+     * @param string $path
+     *
+     * @return string
+     */
+    protected function getUri(string $path)
+    {
+        return $this->getBaseUri() . '/Api/R3' . $path;
+    }
+
+    /**
+     * @param array $base
+     *
+     * @return array
+     */
+    protected function getRequestHeaders(array $base = []): array
+    {
+        $auth = base64_encode($this->systemId . ':' . $this->apiKey);
+        $base += [
+            'Content-Type' => 'application/json',
+            'Authorization' => 'Basic ' . $auth,
+        ];
+
+        return $base;
+    }
+
+    /**
+     * @param string $path
+     *
+     * @return ResponseInterface
+     */
+    protected function get(string $path): ResponseInterface
+    {
+        return $this->sendRequest('GET', $path);
+    }
+
+    /**
+     * @param string $path
+     * @param array $options
+     *
+     * @return ResponseInterface
+     */
+    protected function put(string $path, array $options = []): ResponseInterface
+    {
+        return $this->sendRequest('PUT', $path, $options);
+    }
+
+    /**
+     * @param string $method
+     * @param string $path
+     * @param array $options
+     *
+     * @return \Psr\Http\Message\ResponseInterface
+     */
+    public function sendRequest(string $method, string $path, array $options = []): ResponseInterface
+    {
+        $options += [
+            'headers' => [],
+        ];
+        $options['headers'] += $this->getRequestHeaders();
+
+        try {
+            /** @var \Psr\Http\Message\ResponseInterface $response */
+            $response = $this->client->request($method, $this->getUri($path), $options);
+        } catch (GuzzleException $e) {
+            $this->logger->error($e->getMessage());
+        }
+
+        return $response;
     }
 }
