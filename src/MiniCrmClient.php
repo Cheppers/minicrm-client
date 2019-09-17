@@ -5,7 +5,6 @@ declare(strict_types = 1);
 namespace Cheppers\MiniCrm;
 
 use GuzzleHttp\ClientInterface;
-use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\GuzzleException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
@@ -155,9 +154,9 @@ class MiniCrmClient implements MiniCrmClientInterface
     /**
      * @param string $path
      *
-     * @return ResponseInterface
+     * @return ResponseInterface|null
      */
-    protected function get(string $path): ResponseInterface
+    protected function get(string $path): ?ResponseInterface
     {
         return $this->sendRequest('GET', $path);
     }
@@ -166,9 +165,9 @@ class MiniCrmClient implements MiniCrmClientInterface
      * @param string $path
      * @param array $options
      *
-     * @return ResponseInterface
+     * @return ResponseInterface|null
      */
-    protected function put(string $path, array $options = []): ResponseInterface
+    protected function put(string $path, array $options = []): ?ResponseInterface
     {
         return $this->sendRequest('PUT', $path, $options);
     }
@@ -178,9 +177,9 @@ class MiniCrmClient implements MiniCrmClientInterface
      * @param string $path
      * @param array $options
      *
-     * @return \Psr\Http\Message\ResponseInterface
+     * @return ResponseInterface|null
      */
-    public function sendRequest(string $method, string $path, array $options = []): ResponseInterface
+    protected function sendRequest(string $method, string $path, array $options = []): ?ResponseInterface
     {
         $options += [
             'headers' => [],
@@ -192,8 +191,46 @@ class MiniCrmClient implements MiniCrmClientInterface
             $response = $this->client->request($method, $this->getUri($path), $options);
         } catch (GuzzleException $e) {
             $this->logger->error($e->getMessage());
+        } catch (\Exception $e) {
+            $this->logger->error($e->getMessage());
+        }
+
+        if (!isset($response)) {
+            return null;
         }
 
         return $response;
+    }
+
+    /**
+     * @param $response
+     *
+     * @return mixed
+     *
+     * @throws \Exception
+     */
+    protected function validateResponse($response)
+    {
+        if (is_null($response)) {
+            throw new \Exception('Invalid response.', 1);
+        }
+
+        /** @var ResponseInterface $response */
+        $contentType = $response->getHeader('Content-Type');
+        if (end($contentType) !== 'application/json; charset=utf-8') {
+            throw new \Exception('Invalid Content-Type.', 1);
+        }
+
+        return $response;
+    }
+
+    /**
+     * @param \Psr\Http\Message\ResponseInterface $response
+     *
+     * @return array
+     */
+    protected function parseResponse(ResponseInterface $response): array
+    {
+        return json_decode($response->getBody()->getContents(), true);
     }
 }
