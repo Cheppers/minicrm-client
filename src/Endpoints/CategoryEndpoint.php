@@ -4,35 +4,40 @@ declare(strict_types = 1);
 
 namespace Cheppers\MiniCrm\Endpoints;
 
-use Cheppers\MiniCrm\DataTypes\Category\Categories;
-use Cheppers\MiniCrm\DataTypes\Category\CategoriesDetailed;
+use Cheppers\MiniCrm\DataTypes\Category\CategoryRequest;
+use Cheppers\MiniCrm\DataTypes\Category\CategoryResponse;
+use Cheppers\MiniCrm\DataTypes\Category\CategoryDetailedResponse;
 use Cheppers\MiniCrm\MiniCrmClient;
 
 class CategoryEndpoint extends MiniCrmClient
 {
 
     /**
-     * @return \Cheppers\MiniCrm\DataTypes\Category\Categories
+     * @return \Cheppers\MiniCrm\DataTypes\Category\CategoryResponse
+     *
+     * @throws \Exception
      */
-    public function getCategories(): Categories
+    public function getCategories(): CategoryResponse
     {
-        $response = $this->get('/Category');
+        $response = $this->sendRequest('GET', CategoryRequest::__set_state([]), '/Category');
 
         $body = $this->validateAndParseResponse($response);
-        $categories = Categories::__set_state($body);
+        $categories = CategoryResponse::__set_state($body);
 
         return $categories;
     }
 
     /**
-     * @return \Cheppers\MiniCrm\DataTypes\Category\CategoriesDetailed
+     * @return \Cheppers\MiniCrm\DataTypes\Category\CategoryDetailedResponse
+     *
+     * @throws \Exception
      */
-    public function getCategoriesDetailed(): CategoriesDetailed
+    public function getCategoriesDetailed(): CategoryDetailedResponse
     {
-        $response = $this->get('/Category?Detailed=1');
+        $response = $this->sendRequest('GET', CategoryRequest::__set_state([]), '/Category?Detailed=1');
 
         $body = $this->validateAndParseResponse($response);
-        $categories = CategoriesDetailed::__set_state($body);
+        $categories = CategoryDetailedResponse::__set_state($body);
 
         return $categories;
     }
@@ -40,25 +45,18 @@ class CategoryEndpoint extends MiniCrmClient
     /**
      * @param string $name
      *
-     * @return int|null
+     * @return false|int|string|null
+     *
+     * @throws \Exception
      */
     public function getCategoryId(string $name)
     {
-        $response = $this->get('/Category');
+        $response = $this->sendRequest('GET', CategoryRequest::__set_state([]), '/Category');
 
         $body = $this->validateAndParseResponse($response);
         $categoryId = array_search($name, $body, true);
 
         if (!$categoryId) {
-            $this
-                ->logger
-                ->error(
-                    sprintf(
-                        "There are no categories with the name '%s'",
-                        $name
-                    )
-                );
-
             return null;
         }
 

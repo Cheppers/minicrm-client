@@ -4,9 +4,9 @@ declare(strict_types = 1);
 
 namespace Cheppers\MiniCrm\DataTypes\Category;
 
-use Cheppers\MiniCrm\DataTypes\Base;
+use Cheppers\MiniCrm\DataTypes\ResponseBase;
 
-class CategoryItem extends Base
+class CategoryItem extends ResponseBase
 {
     /**
      * {@inheritdoc}
