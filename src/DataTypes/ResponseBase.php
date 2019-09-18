@@ -4,9 +4,8 @@ declare(strict_types = 1);
 
 namespace Cheppers\MiniCrm\DataTypes;
 
-class Base
+abstract class ResponseBase
 {
-
     /**
      * @var array
      */
