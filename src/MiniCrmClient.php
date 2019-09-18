@@ -4,8 +4,10 @@ declare(strict_types = 1);
 
 namespace Cheppers\MiniCrm;
 
+use Cheppers\MiniCrm\DataTypes\RequestBase;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\GuzzleException;
+use GuzzleHttp\Psr7\Request;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
 
@@ -152,43 +154,21 @@ class MiniCrmClient implements MiniCrmClientInterface
     }
 
     /**
+     * @param $method
+     * @param \Cheppers\MiniCrm\DataTypes\RequestBase $requestType
      * @param string $path
      *
-     * @return ResponseInterface|null
+     * @return \Psr\Http\Message\ResponseInterface|null
      */
-    protected function get(string $path): ?ResponseInterface
+    public function sendRequest($method, RequestBase $requestType, string $path): ?ResponseInterface
     {
-        return $this->sendRequest('GET', $path);
-    }
-
-    /**
-     * @param string $path
-     * @param array $options
-     *
-     * @return ResponseInterface|null
-     */
-    protected function put(string $path, array $options = []): ?ResponseInterface
-    {
-        return $this->sendRequest('PUT', $path, $options);
-    }
-
-    /**
-     * @param string $method
-     * @param string $path
-     * @param array $options
-     *
-     * @return ResponseInterface|null
-     */
-    protected function sendRequest(string $method, string $path, array $options = []): ?ResponseInterface
-    {
-        $options += [
-            'headers' => [],
-        ];
-        $options['headers'] += $this->getRequestHeaders();
+        $message = json_encode($requestType->jsonSerialize());
+        $header = $this->getRequestHeaders();
 
         try {
-            /** @var \Psr\Http\Message\ResponseInterface $response */
-            $response = $this->client->request($method, $this->getUri($path), $options);
+            $response = $this->client->send(
+                new Request($method, $this->getUri($path), $header, $message)
+            );
         } catch (GuzzleException $e) {
             $this->logger->error($e->getMessage());
         } catch (\Exception $e) {
@@ -238,14 +218,12 @@ class MiniCrmClient implements MiniCrmClientInterface
      * @param $response
      *
      * @return array
+     *
+     * @throws \Exception
      */
     protected function validateAndParseResponse($response): array
     {
-        try {
-            $this->validateResponse($response);
-        } catch (\Exception $e) {
-            $this->logger->error($e->getMessage());
-        }
+        $this->validateResponse($response);
 
         return $this->parseResponse($response);
     }
