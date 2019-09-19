@@ -223,7 +223,7 @@ class MiniCrmClient implements MiniCrmClientInterface
      */
     protected function validateAndParseResponse($response): array
     {
-        $this->validateResponse($response);
+        $response = $this->validateResponse($response);
 
         return $this->parseResponse($response);
     }

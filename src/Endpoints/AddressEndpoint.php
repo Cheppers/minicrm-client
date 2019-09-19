@@ -11,44 +11,29 @@ use Cheppers\MiniCrm\MiniCrmClient;
 
 class AddressEndpoint extends MiniCrmClient
 {
-    /**
-     * @param \Cheppers\MiniCrm\DataTypes\Address\AddressRequest $addressRequest
-     *
-     * @return \Cheppers\MiniCrm\DataTypes\Address\AddressResponse
-     *
-     * @throws \Exception
-     */
-    public function getAddresses(AddressRequest $addressRequest): AddressResponse
-    {
-        $response = $this->sendRequest(
-            'GET',
-            $addressRequest,
-            "/AddressList/{$addressRequest->contactId}"
-        );
-
-        $body = $this->validateAndParseResponse($response);
-        $addresses = AddressResponse::__set_state($body);
-
-        return $addresses;
-    }
 
     /**
      * @param \Cheppers\MiniCrm\DataTypes\Address\AddressRequest $addressRequest
+     * @param bool $structured
      *
-     * @return \Cheppers\MiniCrm\DataTypes\Address\StructuredAddressResponse
-     *
+     * @return \Cheppers\MiniCrm\DataTypes\Address\AddressResponse|\Cheppers\MiniCrm\DataTypes\Address\StructuredAddressResponse
      * @throws \Exception
      */
-    public function getStructuredAddresses(AddressRequest $addressRequest): StructuredAddressResponse
+    public function getAddresses(AddressRequest $addressRequest, bool $structured = false)
     {
+        $path = "/AddressList/{$addressRequest->contactId}";
+        $path = $structured ? "{$path}?Structured=1" : $path;
+
         $response = $this->sendRequest(
             'GET',
             $addressRequest,
-            "/AddressList/{$addressRequest->contactId}?Structured=1"
+            $path
         );
 
         $body = $this->validateAndParseResponse($response);
-        $addresses = StructuredAddressResponse::__set_state($body);
+        $addresses = $structured
+            ? StructuredAddressResponse::__set_state($body)
+            : AddressResponse::__set_state($body);
 
         return $addresses;
     }
