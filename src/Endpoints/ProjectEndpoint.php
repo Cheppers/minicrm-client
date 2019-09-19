@@ -43,7 +43,6 @@ class ProjectEndpoint extends MiniCrmClient
     public function getProjectsByCategoryId(int $categoryId): ProjectResponse
     {
         $path = "/Project?CategoryId={$categoryId}";
-        $path= "/Project?UserId=60971"; //Lead, Success, Open, Failed
 
         $response = $this->sendRequest(
             'GET',
