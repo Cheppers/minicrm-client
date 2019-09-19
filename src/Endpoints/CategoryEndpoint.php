@@ -45,9 +45,13 @@ class CategoryEndpoint extends MiniCrmClient
      *
      * @throws \Exception
      */
-    public function getCategoryId(string $name)
+    public function getCategoryIdByName(string $name)
     {
-        $response = $this->sendRequest('GET', CategoryRequest::__set_state([]), '/Category');
+        $response = $this->sendRequest(
+            'GET',
+            CategoryRequest::__set_state([]),
+            '/Category'
+        );
 
         $body = $this->validateAndParseResponse($response);
         $categoryId = array_search($name, $body, true);
