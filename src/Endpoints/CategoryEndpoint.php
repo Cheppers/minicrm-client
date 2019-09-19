@@ -37,29 +37,4 @@ class CategoryEndpoint extends MiniCrmClient
 
         return $categories;
     }
-
-    /**
-     * @param string $name
-     *
-     * @return false|int|string|null
-     *
-     * @throws \Exception
-     */
-    public function getCategoryIdByName(string $name)
-    {
-        $response = $this->sendRequest(
-            'GET',
-            CategoryRequest::__set_state([]),
-            '/Category'
-        );
-
-        $body = $this->validateAndParseResponse($response);
-        $categoryId = array_search($name, $body, true);
-
-        if (!$categoryId) {
-            return null;
-        }
-
-        return $categoryId;
-    }
 }
