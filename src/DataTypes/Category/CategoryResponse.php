@@ -8,14 +8,22 @@ use Cheppers\MiniCrm\DataTypes\ResponseBase;
 
 class CategoryResponse extends ResponseBase
 {
+    /**
+     * {@inheritdoc}
+     */
     public static function __set_state($data)
     {
         $instance = new static();
 
         foreach ($data as $key => $element) {
-            $instance->{$key} = $element;
+            $instance->results{$key} = $element;
         }
 
         return $instance;
     }
+
+    /**
+     * @var array
+     */
+    public $results;
 }

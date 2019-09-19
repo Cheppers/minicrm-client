@@ -17,6 +17,7 @@ class AddressEndpoint extends MiniCrmClient
      * @param bool $structured
      *
      * @return \Cheppers\MiniCrm\DataTypes\Address\AddressResponse|\Cheppers\MiniCrm\DataTypes\Address\StructuredAddressResponse
+     *
      * @throws \Exception
      */
     public function getAddresses(AddressRequest $addressRequest, bool $structured = false)
