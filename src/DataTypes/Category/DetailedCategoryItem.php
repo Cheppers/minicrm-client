@@ -6,7 +6,7 @@ namespace Cheppers\MiniCrm\DataTypes\Category;
 
 use Cheppers\MiniCrm\DataTypes\ResponseBase;
 
-class CategoryItem extends ResponseBase
+class DetailedCategoryItem extends ResponseBase
 {
     /**
      * {@inheritdoc}

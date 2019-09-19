@@ -6,14 +6,14 @@ namespace Cheppers\MiniCrm\DataTypes\Category;
 
 use Cheppers\MiniCrm\DataTypes\ResponseBase;
 
-class CategoryDetailedResponse extends ResponseBase
+class DetailedCategoryResponse extends ResponseBase
 {
     public static function __set_state($data)
     {
         $instance = new static();
 
         foreach ($data as $key => $element) {
-            $instance->{$key} = CategoryItem::__set_state($element);
+            $instance->{$key} = DetailedCategoryItem::__set_state($element);
         }
 
         return $instance;

@@ -6,38 +6,34 @@ namespace Cheppers\MiniCrm\Endpoints;
 
 use Cheppers\MiniCrm\DataTypes\Category\CategoryRequest;
 use Cheppers\MiniCrm\DataTypes\Category\CategoryResponse;
-use Cheppers\MiniCrm\DataTypes\Category\CategoryDetailedResponse;
+use Cheppers\MiniCrm\DataTypes\Category\DetailedCategoryResponse;
 use Cheppers\MiniCrm\MiniCrmClient;
 
 class CategoryEndpoint extends MiniCrmClient
 {
-
     /**
-     * @return \Cheppers\MiniCrm\DataTypes\Category\CategoryResponse
+     * @param \Cheppers\MiniCrm\DataTypes\Category\CategoryRequest $categoryRequest
+     * @param bool $detailed
+     *
+     * @return \Cheppers\MiniCrm\DataTypes\Category\CategoryResponse|\Cheppers\MiniCrm\DataTypes\Category\DetailedCategoryResponse
      *
      * @throws \Exception
      */
-    public function getCategories(): CategoryResponse
+    public function getCategories(CategoryRequest $categoryRequest, bool $detailed = false)
     {
-        $response = $this->sendRequest('GET', CategoryRequest::__set_state([]), '/Category');
+        $path = '/Category';
+        $path = $detailed ? "{$path}?Detailed=1" : $path;
+
+        $response = $this->sendRequest(
+            'GET',
+            $categoryRequest,
+            $path
+        );
 
         $body = $this->validateAndParseResponse($response);
-        $categories = CategoryResponse::__set_state($body);
-
-        return $categories;
-    }
-
-    /**
-     * @return \Cheppers\MiniCrm\DataTypes\Category\CategoryDetailedResponse
-     *
-     * @throws \Exception
-     */
-    public function getCategoriesDetailed(): CategoryDetailedResponse
-    {
-        $response = $this->sendRequest('GET', CategoryRequest::__set_state([]), '/Category?Detailed=1');
-
-        $body = $this->validateAndParseResponse($response);
-        $categories = CategoryDetailedResponse::__set_state($body);
+        $categories = $detailed
+            ? DetailedCategoryResponse::__set_state($body)
+            : CategoryResponse::__set_state($body);
 
         return $categories;
     }
