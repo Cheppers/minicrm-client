@@ -17,6 +17,9 @@ class StructuredAddressItem extends ResponseBase
         'Address' => 'address',
     ];
 
+    /**
+     * {@inheritdoc}
+     */
     public static function __set_state($data)
     {
         $instance = new static();

@@ -8,6 +8,9 @@ use Cheppers\MiniCrm\DataTypes\ResponseBase;
 
 class AddressResponse extends ResponseBase
 {
+    /**
+     * {@inheritdoc}
+     */
     public static function __set_state($data)
     {
         $instance = new static();
