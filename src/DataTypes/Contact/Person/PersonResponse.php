@@ -2,7 +2,9 @@
 
 declare(strict_types = 1);
 
-namespace Cheppers\MiniCrm\DataTypes\Contact;
+namespace Cheppers\MiniCrm\DataTypes\Contact\Person;
+
+use Cheppers\MiniCrm\DataTypes\Contact\ContactResponseBase;
 
 class PersonResponse extends ContactResponseBase
 {

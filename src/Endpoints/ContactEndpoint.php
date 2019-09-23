@@ -4,11 +4,11 @@ declare(strict_types = 1);
 
 namespace Cheppers\MiniCrm\Endpoints;
 
-use Cheppers\MiniCrm\DataTypes\Contact\BusinessRequest;
-use Cheppers\MiniCrm\DataTypes\Contact\BusinessResponse;
+use Cheppers\MiniCrm\DataTypes\Contact\Business\BusinessRequest;
+use Cheppers\MiniCrm\DataTypes\Contact\Business\BusinessResponse;
 use Cheppers\MiniCrm\DataTypes\Contact\ContactRequestBase;
-use Cheppers\MiniCrm\DataTypes\Contact\PersonRequest;
-use Cheppers\MiniCrm\DataTypes\Contact\PersonResponse;
+use Cheppers\MiniCrm\DataTypes\Contact\Person\PersonRequest;
+use Cheppers\MiniCrm\DataTypes\Contact\Person\PersonResponse;
 use Cheppers\MiniCrm\MiniCrmClient;
 
 class ContactEndpoint extends MiniCrmClient
@@ -19,7 +19,7 @@ class ContactEndpoint extends MiniCrmClient
      *
      * @param int $contactId
      *
-     * @return \Cheppers\MiniCrm\DataTypes\Contact\PersonResponse
+     * @return \Cheppers\MiniCrm\DataTypes\Contact\Person\PersonResponse
      *
      * @throws \Exception
      */
@@ -36,7 +36,7 @@ class ContactEndpoint extends MiniCrmClient
      *
      * @param int $contactId
      *
-     * @return \Cheppers\MiniCrm\DataTypes\Contact\BusinessResponse
+     * @return \Cheppers\MiniCrm\DataTypes\Contact\Business\BusinessResponse
      *
      * @throws \Exception
      */
@@ -49,7 +49,7 @@ class ContactEndpoint extends MiniCrmClient
     }
 
     /**
-     * @param \Cheppers\MiniCrm\DataTypes\Contact\PersonRequest $personRequest
+     * @param \Cheppers\MiniCrm\DataTypes\Contact\Person\PersonRequest $personRequest
      *
      * @return array
      *
@@ -64,7 +64,7 @@ class ContactEndpoint extends MiniCrmClient
     }
 
     /**
-     * @param \Cheppers\MiniCrm\DataTypes\Contact\BusinessRequest $businessRequest
+     * @param \Cheppers\MiniCrm\DataTypes\Contact\Business\BusinessRequest $businessRequest
      *
      * @return array
      *
