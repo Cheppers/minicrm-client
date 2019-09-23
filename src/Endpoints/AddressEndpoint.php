@@ -12,15 +12,15 @@ use Cheppers\MiniCrm\MiniCrmClient;
 class AddressEndpoint extends MiniCrmClient
 {
     /**
-     * @param int $projectId
+     * @param int $addressId
      *
      * @return \Cheppers\MiniCrm\DataTypes\Address\AddressResponse
      *
      * @throws \Exception
      */
-    public function getAddress(int $projectId)
+    public function getAddress(int $addressId)
     {
-        $path = "/Address/{$projectId}";
+        $path = "/Address/{$addressId}";
 
         $response = $this->sendRequest(
             'GET',
