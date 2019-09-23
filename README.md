@@ -3,32 +3,34 @@ PHP library implementing the MiniCRM API https://www.minicrm.hu/help/minicrm-api
 
 Supported endpoints
 ------
-##### Schema
+#### Schema
 - [GET: /Schema/Project/:project_id](https://www.minicrm.hu/help/semak-lekerese#Smklekrse)
+
+    _Gets back the schema of a Project based on the given ID._
     ```php
     $client->getProjectSchema(int $projectId)
     ```
-    _Gets back the schema of a Project based on the given ID._
 - [GET: /Schema/Person](https://www.minicrm.hu/help/semak-lekerese#Smklekrse)
+
+    _Gets back the schema of Person entities._
     ```php
     $client->getPersonSchema()
     ```
-    _Gets back the schema of Person entities.
 - [GET: /Schema/Business](https://www.minicrm.hu/help/semak-lekerese#Smklekrse)
+
+     _Gets back the schema of Business entities._
     ```php
     $client->getBusinessSchema()
     ```
-    _Gets back the schema of Business entities._
-##### Address
+#### Address
 - [GET: /Address/:address_id](https://www.minicrm.hu/help/cim-muveletek/#Cmletlts)
+
+    _Gets back an Address based on the given ID._
     ```php
     $client->getAddress(int $addressId)
     ```
-    _Gets back an Address based on the given ID._
 - [GET: /AddressList/:contact_id](https://www.minicrm.hu/help/cim-muveletek/#Cmletlts)
-    ```php
-    $client->getAddresses(AddressRequest $addressRequest, bool $structured = false)
-    ```
+
     _Gets back the Address(es) of a given Person/Business. By providing
     the second parameter 'true' or 'false' you can decide whether you
     want to get the data structured or not. Default value is 'false'._  
@@ -38,15 +40,19 @@ Supported endpoints
     __Keep in mind__ if you provide a 'contactId' already in use, the
     method will update that particular contact with the given field's
     values. 
-- [PUT: /Address](https://www.minicrm.hu/help/cim-muveletek/#Cmadatmdosts)
     ```php
-    $client->createAddress(AddressRequest $addressRequest)
-    ``` 
+    $client->getAddresses(AddressRequest $addressRequest, bool $structured = false)
+    ```
+- [PUT: /Address](https://www.minicrm.hu/help/cim-muveletek/#Cmadatmdosts)
+    
     _Creates a new Address in MiniCRM database based on the provided
     field's values_
     _Fields 'contactId' and 'name' are mandatory, see the Basic usage
     section, how to provide it._ 
-##### Category
+    ```php
+    $client->createAddress(AddressRequest $addressRequest)
+    ``` 
+#### Category
 - [GET: /Category](https://www.minicrm.hu/help/semak-lekerese/) 
     ```php
     $client->getCategories(CategoryRequest $categoryRequest, bool $detailed = false)
@@ -55,7 +61,7 @@ Supported endpoints
     the second parameter 'true' or 'false' you can decide whether you
     want to het the data detailed or not. Default value is 'false'._
         
-##### Contact
+#### Contact
 - [GET: /Contact/:contact_id](https://www.minicrm.hu/help/kontakt-muveletek/)  
     ```php
     $client->getPerson(int $contactId)
@@ -80,49 +86,57 @@ Supported endpoints
     field's values_
     _Field 'name' is mandatory, see the Basic usage
     section, how to provide it._ 
-##### Project
+#### Project
 - [GET: /Project/:project_id](https://www.minicrm.hu/help/projekt-adatmodositas/)
+
+    @todo
     ```php
     $client->getProject(int $projectId)
     ```
+
     @todo
     ```php
     $client->getProjectsByCategoryId(int $categoryId)
     ```
+
     @todo
     ```php
     $client->getProjectsByStatusGroup(string $statusGroup)
     ```
+
     @todo
     ```php
     $client->getProjectsByUserId(int $userId)
     ```
-    @todo
 - [PUT: /Project](https://www.minicrm.hu/help/projekt-adatmodositas#Projektadatmdosts)
     ```php
     $client->createProject(ProjectRequest $projectRequest)
     ```
     @todo
-##### ToDo
+#### ToDo
 - [GET: /ToDo]
+
+    @todo
     ```php
     $client->getTodo(int $todoId)
     ```
-    @todo
 - [GET: /ToDoList]
+
+    @todo
     ```php
     $client->getTodoList(int $projectId)
     ```
-    @todo
 - [PUT: /ToDo]
+
+    @todo
     ```php
     $client->createToDo(TodoRequest $todoRequest)
     ```
+
     @todo
     ```php
     $client->updateTodo(TodoRequest $todoRequest)
     ```
-    @todo
 
 ## Basic usage
 The MiniCRM client uses separate endpoints as clients, so in order to
