@@ -105,6 +105,5 @@ class TodoEndpoint extends MiniCrmClient
         $body = $this->validateAndParseResponse($response);
 
         return $body;
-
     }
 }
