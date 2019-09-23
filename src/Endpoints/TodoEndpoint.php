@@ -85,10 +85,23 @@ class TodoEndpoint extends MiniCrmClient
      */
     public function updateTodo(TodoRequest $todoRequest): array
     {
-        $path = "/ToDo/{$todoRequest->todoId}";
-        // Can't send TodoId as data, only needed for path.
-        unset($todoRequest->todoId);
-        $response = $this->sendRequest('PUT', $todoRequest, $path);
+        $path = "/ToDo/{$todoRequest->id}";
+        $todo = $this->getTodo($todoRequest->id);
+
+        foreach ($todoRequest as $key => $item) {
+            if (!empty($item)) {
+                $todo->{$key} = $item;
+            }
+        }
+        // No need, also can't send it as data.
+        unset($todo->id);
+
+        foreach ($todo as $key => $item) {
+            $todoHelper[$key] = $item;
+        }
+        $updatedTodoRequest = TodoRequest::__set_state($todoHelper);
+
+        $response = $this->sendRequest('PUT', $updatedTodoRequest, $path);
         $body = $this->validateAndParseResponse($response);
 
         return $body;

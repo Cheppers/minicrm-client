@@ -12,7 +12,7 @@ class TodoRequest extends RequestBase
     /**
      * @var int
      */
-    public $todoId;
+    public $id;
 
     /**
      * @var int
@@ -43,8 +43,8 @@ class TodoRequest extends RequestBase
 
         foreach (array_keys(get_object_vars($this)) as $key) {
             switch ($key) {
-                case 'todoId':
-                    $data['TodoId'] = $this->todoId;
+                case 'id':
+                    $data['TodoId'] = $this->id;
                     break;
                 case 'projectId':
                     $data['ProjectId'] = $this->projectId;
