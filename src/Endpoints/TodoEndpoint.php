@@ -11,7 +11,6 @@ use Cheppers\MiniCrm\MiniCrmClient;
 
 class TodoEndpoint extends MiniCrmClient
 {
-
     /**
      * @param int $todoId
      *
@@ -56,5 +55,20 @@ class TodoEndpoint extends MiniCrmClient
         $project = TodoListResponse::__set_state($body);
 
         return $project;
+    }
+
+    /**
+     * @param \Cheppers\MiniCrm\DataTypes\Todo\TodoRequest $todoRequest
+     *
+     * @return array
+     *
+     * @throws \Exception
+     */
+    public function createTodo(TodoRequest $todoRequest): array
+    {
+        $response = $this->sendRequest('PUT', $todoRequest, '/ToDo');
+        $body = $this->validateAndParseResponse($response);
+
+        return $body;
     }
 }
