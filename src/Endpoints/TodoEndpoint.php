@@ -71,4 +71,27 @@ class TodoEndpoint extends MiniCrmClient
 
         return $body;
     }
+
+    /**
+     * Updates a Todo. 'TodoId' and 'ProjetId' are mandatory.
+     * Only Todos that are in 'Open' status can be updated.
+     * ProjectId of an existing Todo cannot be changed.
+     *
+     * @param \Cheppers\MiniCrm\DataTypes\Todo\TodoRequest $todoRequest
+     *
+     * @return array
+     *
+     * @throws \Exception
+     */
+    public function updateTodo(TodoRequest $todoRequest): array
+    {
+        $path = "/ToDo/{$todoRequest->todoId}";
+        // Can't send TodoId as data, only needed for path.
+        unset($todoRequest->todoId);
+        $response = $this->sendRequest('PUT', $todoRequest, $path);
+        $body = $this->validateAndParseResponse($response);
+
+        return $body;
+
+    }
 }

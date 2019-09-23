@@ -8,6 +8,12 @@ use Cheppers\MiniCrm\DataTypes\RequestBase;
 
 class TodoRequest extends RequestBase
 {
+
+    /**
+     * @var int
+     */
+    public $todoId;
+
     /**
      * @var int
      */
@@ -37,6 +43,9 @@ class TodoRequest extends RequestBase
 
         foreach (array_keys(get_object_vars($this)) as $key) {
             switch ($key) {
+                case 'todoId':
+                    $data['TodoId'] = $this->todoId;
+                    break;
                 case 'projectId':
                     $data['ProjectId'] = $this->projectId;
                     break;
