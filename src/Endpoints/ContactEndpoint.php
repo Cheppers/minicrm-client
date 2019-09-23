@@ -4,8 +4,10 @@ declare(strict_types = 1);
 
 namespace Cheppers\MiniCrm\Endpoints;
 
+use Cheppers\MiniCrm\DataTypes\Contact\BusinessRequest;
 use Cheppers\MiniCrm\DataTypes\Contact\BusinessResponse;
-use Cheppers\MiniCrm\DataTypes\Contact\ContactRequest;
+use Cheppers\MiniCrm\DataTypes\Contact\ContactRequestBase;
+use Cheppers\MiniCrm\DataTypes\Contact\PersonRequest;
 use Cheppers\MiniCrm\DataTypes\Contact\PersonResponse;
 use Cheppers\MiniCrm\MiniCrmClient;
 
@@ -47,6 +49,36 @@ class ContactEndpoint extends MiniCrmClient
     }
 
     /**
+     * @param \Cheppers\MiniCrm\DataTypes\Contact\PersonRequest $personRequest
+     *
+     * @return array
+     *
+     * @throws \Exception
+     */
+    public function createPerson(PersonRequest $personRequest): array
+    {
+        $response = $this->sendRequest('PUT', $personRequest, '/Contact');
+        $body = $this->validateAndParseResponse($response);
+
+        return $body;
+    }
+
+    /**
+     * @param \Cheppers\MiniCrm\DataTypes\Contact\BusinessRequest $businessRequest
+     *
+     * @return array
+     *
+     * @throws \Exception
+     */
+    public function createBusiness(BusinessRequest $businessRequest): array
+    {
+        $response = $this->sendRequest('PUT', $businessRequest, '/Contact');
+        $body = $this->validateAndParseResponse($response);
+
+        return $body;
+    }
+
+    /**
      * Deletes a Contact.
      *
      * @param int $contactId
@@ -62,7 +94,7 @@ class ContactEndpoint extends MiniCrmClient
     {
         $response = $this->sendRequest(
             'GET',
-            ContactRequest::__set_state([]),
+            ContactRequestBase::__set_state([]),
             "/PurgePerson/{$contactId}"
         );
 
@@ -82,7 +114,7 @@ class ContactEndpoint extends MiniCrmClient
     {
         $response = $this->sendRequest(
             'GET',
-            ContactRequest::__set_state([]),
+            ContactRequestBase::__set_state([]),
             "/Contact/{$contactId}"
         );
 
