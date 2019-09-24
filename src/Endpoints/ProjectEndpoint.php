@@ -116,7 +116,14 @@ class ProjectEndpoint extends MiniCrmClient
         return $this->validateAndParseResponse($response);
     }
 
-    public function updateProject(ProjectRequest $projectRequest)
+    /**
+     * @param \Cheppers\MiniCrm\DataTypes\Project\ProjectRequest $projectRequest
+     *
+     * @return array
+     *
+     * @throws \Exception
+     */
+    public function updateProject(ProjectRequest $projectRequest): array
     {
         $path = "/Project/{$projectRequest->id}";
         $project = $this->getProject($projectRequest->id);

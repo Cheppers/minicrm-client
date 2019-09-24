@@ -9,6 +9,11 @@ use Cheppers\MiniCrm\DataTypes\RequestBase;
 class ContactRequestBase extends RequestBase
 {
     /**
+     * @var int
+     */
+    public $id;
+
+    /**
      * @var string
      */
     public $type;
@@ -47,6 +52,9 @@ class ContactRequestBase extends RequestBase
 
         foreach (array_keys(get_object_vars($this)) as $key) {
             switch ($key) {
+                case 'id':
+                    $data['Id'] = $this->id;
+                    break;
                 case 'type':
                     $data['Type'] = $this->type;
                     break;

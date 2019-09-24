@@ -75,6 +75,30 @@ class ContactEndpoint extends MiniCrmClient
     }
 
     /**
+     * @param \Cheppers\MiniCrm\DataTypes\Contact\Person\PersonRequest $personRequest
+     *
+     * @return array
+     *
+     * @throws \Exception
+     */
+    public function updatePerson(PersonRequest $personRequest): array
+    {
+        return $this->updateContact($personRequest);
+    }
+
+    /**
+     * @param \Cheppers\MiniCrm\DataTypes\Contact\Business\BusinessRequest $businessRequest
+     *
+     * @return array
+     *
+     * @throws \Exception
+     */
+    public function updateBusiness(BusinessRequest $businessRequest): array
+    {
+        return $this->updateContact($businessRequest);
+    }
+
+    /**
      * Deletes a Contact.
      *
      * @param int $contactId
@@ -111,6 +135,32 @@ class ContactEndpoint extends MiniCrmClient
             ContactRequestBase::__set_state([]),
             "/Contact/{$contactId}"
         );
+
+        return $this->validateAndParseResponse($response);
+    }
+
+    /**
+     * @param $request
+     *
+     * @return array
+     *
+     * @throws \Exception
+     */
+    protected function updateContact($request): array
+    {
+        if ($request instanceof PersonRequest) {
+            $contact = $this->getPerson($request->id);
+        } elseif ($request instanceof BusinessRequest) {
+            $contact = $this->getBusiness($request->id);
+        } else {
+            throw new \Exception('Wrong request.', 1);
+        }
+
+        $path = "/Contact/{$request->id}";
+
+        // Type can not be changed.
+        $request->type = $contact->type;
+        $response = $this->sendRequest('PUT', $request, $path);
 
         return $this->validateAndParseResponse($response);
     }
