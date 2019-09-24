@@ -115,22 +115,33 @@ Supported endpoints
     ```php
     $client->getProject(int $projectId);
     ```
+- [GET: /Project?CategoryId=:category_id](https://www.minicrm.hu/help/projekt-adatmodositas/)
 
     _Gets back a Project based on the given CategoryID._
     ```php
     $client->getProjectsByCategoryId(int $categoryId);
     ```
+- [GET: /Project?StatusGroup=:status_group](https://www.minicrm.hu/help/projekt-adatmodositas/)
 
     _Gets back a Project based on the Status Group._  
     _Status group values can be: 'Lead', 'Open', 'Success', 'Failed'._
     ```php
     $client->getProjectsByStatusGroup(string $statusGroup);
     ```
+- [GET: /Project?UserId=:user_id](https://www.minicrm.hu/help/projekt-adatmodositas/)
 
     _Gets back Project based on the given UserID._
     ```php
     $client->getProjectsByUserId(int $userId);
     ```
+- [GET: /EmailList/:project_id](https://www.minicrm.hu/help/projekt-adatmodositas/)
+
+    _Gets back a given Project's all emails based on the provided ID._  
+    _See the basic usage section how to provide the ID._
+    ```php
+    $client->getProjectEmails(ProjectRequest $projectRequest);
+    ```
+
 - [PUT: /Project](https://www.minicrm.hu/help/projekt-adatmodositas#Projektadatmdosts)
 
     _Creates a new Project in MiniCRM database based on the provided
