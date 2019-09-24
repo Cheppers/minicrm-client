@@ -4,6 +4,8 @@ declare(strict_types = 1);
 namespace Cheppers\MiniCrm\Tests\Unit\Endpoints;
 
 use Cheppers\MiniCrm\DataTypes\Category\CategoryRequest;
+use Cheppers\MiniCrm\DataTypes\Category\CategoryResponse;
+use Cheppers\MiniCrm\DataTypes\Category\DetailedCategoryResponse;
 use Cheppers\MiniCrm\Endpoints\CategoryEndpoint;
 use Cheppers\MiniCrm\MiniCrmClient;
 use GuzzleHttp\Client;
@@ -95,8 +97,84 @@ class CategoryEndpointTest extends TestCase
 
         if ($expected) {
             static::assertEquals(
-                json_encode($expected, JSON_PRETTY_PRINT),
-                json_encode($categories->results, JSON_PRETTY_PRINT)
+                json_encode(CategoryResponse::__set_state($expected), JSON_PRETTY_PRINT),
+                json_encode($categories, JSON_PRETTY_PRINT)
+            );
+        } else {
+            static::assertNull($categories);
+        }
+    }
+
+    public function casesDetailedCategories()
+    {
+        $categoryData = [
+            '1' => [
+                '1' => [
+                    'id' => 1,
+                    'orderId' => 1,
+                    'name' => 'Test Category 1',
+                    'type' => 'Test Category Type',
+                    'senderName' => 'Test Category Sender Name',
+                    'senderEmail' => 'test@categsender.mail',
+                    'phone' => '123456789',
+                ]
+            ],
+            '2' => [
+                '2' => [
+                    'id' => 2,
+                    'orderId' => 2,
+                    'name' => 'Test Category 2',
+                    'type' => 'Test Category Type',
+                    'senderName' => 'Test Category Sender Name',
+                    'senderEmail' => 'test@categsender.mail',
+                    'phone' => '123456789',
+                ]
+            ],
+        ];
+
+        return [
+            'category' => [
+                $categoryData,
+                $categoryData,
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider casesDetailedCategories
+     */
+    public function testGetDetailedCategories(array $expected, array $response)
+    {
+        $container = [];
+        $history = Middleware::history($container);
+        $mock = new MockHandler([
+            new Response(
+                200,
+                ['Content-Type' => 'application/json; charset=utf-8'],
+                \GuzzleHttp\json_encode($response)
+            ),
+            new RequestException(
+                'Error communicating with server.',
+                new Request('GET', '/Api/R3/Category')
+            )
+        ]);
+        $handlerStack = HandlerStack::create($mock);
+        $handlerStack->push($history);
+
+        $client = new Client([
+            'handler' => $handlerStack,
+        ]);
+        $logger = new NullLogger();
+        $category = new CategoryEndpoint($client, $logger);
+        $category->setCredentials($this->clientOptions);
+
+        $body = CategoryRequest::__set_state($expected);
+        $categories = $category->getCategories($body, true);
+
+        if ($expected) {
+            static::assertEquals(
+                json_encode(DetailedCategoryResponse::__set_state($expected), JSON_PRETTY_PRINT),
+                json_encode($categories, JSON_PRETTY_PRINT)
             );
         } else {
             static::assertNull($categories);

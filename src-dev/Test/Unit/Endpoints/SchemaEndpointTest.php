@@ -3,6 +3,7 @@ declare(strict_types = 1);
 
 namespace Cheppers\MiniCrm\Tests\Unit\Endpoints;
 
+use Cheppers\MiniCrm\DataTypes\Schema\SchemaResponse;
 use Cheppers\MiniCrm\Endpoints\SchemaEndpoint;
 use Cheppers\MiniCrm\MiniCrmClient;
 use GuzzleHttp\Client;
@@ -96,8 +97,8 @@ class SchemaEndpointTest extends TestCase
 
         if ($expected) {
             static::assertEquals(
-                json_encode($expected, JSON_PRETTY_PRINT),
-                json_encode($person->results, JSON_PRETTY_PRINT)
+                json_encode(SchemaResponse::__set_state($expected), JSON_PRETTY_PRINT),
+                json_encode($person, JSON_PRETTY_PRINT)
             );
         } else {
             static::assertNull($person);
@@ -157,8 +158,8 @@ class SchemaEndpointTest extends TestCase
         $business = $schema->getBusinessSchema();
         if ($expected) {
             static::assertEquals(
-                json_encode($expected, JSON_PRETTY_PRINT),
-                json_encode($business->results, JSON_PRETTY_PRINT)
+                json_encode(SchemaResponse::__set_state($expected), JSON_PRETTY_PRINT),
+                json_encode($business, JSON_PRETTY_PRINT)
             );
         } else {
             static::assertNull($business);
@@ -217,8 +218,8 @@ class SchemaEndpointTest extends TestCase
         $project = $schema->getProjectSchema(1);
         if ($expected) {
             static::assertEquals(
-                json_encode($expected, JSON_PRETTY_PRINT),
-                json_encode($project->results, JSON_PRETTY_PRINT)
+                json_encode(SchemaResponse::__set_state($expected), JSON_PRETTY_PRINT),
+                json_encode($project, JSON_PRETTY_PRINT)
             );
         } else {
             static::assertNull($project);
