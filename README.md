@@ -188,6 +188,22 @@ Supported endpoints
     ```php
     $client->updateTodo(TodoRequest $todoRequest);
     ```
+#### Template
+- [GET: /Template/:template_id](https://www.minicrm.hu/help/sablon-muveletek/)
+
+    _Gets back a Template based on the given ID._
+    ```php
+    $client->getTemplate(int $templateId);
+    ```
+- [GET: /TemplateList/:category_id](https://www.minicrm.hu/help/sablon-muveletek/)
+
+    _Gets back a list of Templates according to a Category based on the
+    given ID._  
+    _Field 'categoryId' is mandatory, see the Basic usage section, how 
+    to provide it._
+    ```php
+    $client->getTemplateList(TemplateRequest $templateRequest);
+    ```
 
 ## Basic usage
 The MiniCRM client uses separate endpoints as clients, so in order to
