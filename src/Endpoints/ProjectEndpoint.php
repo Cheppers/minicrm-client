@@ -29,9 +29,8 @@ class ProjectEndpoint extends MiniCrmClient
         );
 
         $body = $this->validateAndParseResponse($response);
-        $project = SingleProjectResponse::__set_state($body);
 
-        return $project;
+        return SingleProjectResponse::__set_state($body);
     }
 
     /**
@@ -51,9 +50,8 @@ class ProjectEndpoint extends MiniCrmClient
         );
 
         $body = $this->validateAndParseResponse($response);
-        $projects = ProjectResponse::__set_state($body);
 
-        return $projects;
+        return ProjectResponse::__set_state($body);
     }
 
     /**
@@ -73,9 +71,8 @@ class ProjectEndpoint extends MiniCrmClient
         );
 
         $body = $this->validateAndParseResponse($response);
-        $projects = ProjectResponse::__set_state($body);
 
-        return $projects;
+        return ProjectResponse::__set_state($body);
     }
 
     /**
@@ -95,9 +92,8 @@ class ProjectEndpoint extends MiniCrmClient
         );
 
         $body = $this->validateAndParseResponse($response);
-        $projects = ProjectResponse::__set_state($body);
 
-        return $projects;
+        return ProjectResponse::__set_state($body);
     }
 
     /**
@@ -117,8 +113,24 @@ class ProjectEndpoint extends MiniCrmClient
             $path
         );
 
-        $body = $this->validateAndParseResponse($response);
+        return $this->validateAndParseResponse($response);
+    }
 
-        return $body;
+    public function updateProject(ProjectRequest $projectRequest)
+    {
+        $path = "/Project/{$projectRequest->id}";
+        $project = $this->getProject($projectRequest->id);
+
+        // CategoryId and ContactId can not be changed.
+        $projectRequest->categoryId = $project->categoryId;
+        $projectRequest->contactId = $project->contactId;
+
+        $response = $this->sendRequest(
+            'PUT',
+            $projectRequest,
+            $path
+        );
+
+        return $this->validateAndParseResponse($response);
     }
 }

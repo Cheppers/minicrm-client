@@ -176,6 +176,7 @@ $address->setCredentials($credentials);
 // Printing out the Address with the ID: 1487.
 print_r($address->getAddress(1487));
 
-// To check available methods on endpoints, check above.
-
 ```
+ To check available methods on endpoints, check above.
+
+

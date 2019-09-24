@@ -29,9 +29,8 @@ class TodoEndpoint extends MiniCrmClient
         );
 
         $body = $this->validateAndParseResponse($response);
-        $project = SingleTodoResponse::__set_state($body);
 
-        return $project;
+        return SingleTodoResponse::__set_state($body);
     }
 
     /**
@@ -52,9 +51,8 @@ class TodoEndpoint extends MiniCrmClient
         );
 
         $body = $this->validateAndParseResponse($response);
-        $project = TodoListResponse::__set_state($body);
 
-        return $project;
+        return TodoListResponse::__set_state($body);
     }
 
     /**
@@ -67,13 +65,12 @@ class TodoEndpoint extends MiniCrmClient
     public function createTodo(TodoRequest $todoRequest): array
     {
         $response = $this->sendRequest('PUT', $todoRequest, '/ToDo');
-        $body = $this->validateAndParseResponse($response);
 
-        return $body;
+        return $this->validateAndParseResponse($response);
     }
 
     /**
-     * Updates a Todo. 'TodoId' and 'ProjetId' are mandatory.
+     * Updates a Todo. 'TodoId' and 'ProjectId' are mandatory.
      * Only Todos that are in 'Open' status can be updated.
      * ProjectId of an existing Todo cannot be changed.
      *
@@ -88,22 +85,15 @@ class TodoEndpoint extends MiniCrmClient
         $path = "/ToDo/{$todoRequest->id}";
         $todo = $this->getTodo($todoRequest->id);
 
-        foreach ($todoRequest as $key => $item) {
-            if (!empty($item)) {
-                $todo->{$key} = $item;
-            }
-        }
-        // No need, also can't send it as data.
-        unset($todo->id);
+        // ProjectId can not be changed.
+        $todoRequest->projectId = $todo->projectId;
 
-        foreach ($todo as $key => $item) {
-            $todoHelper[$key] = $item;
-        }
-        $updatedTodoRequest = TodoRequest::__set_state($todoHelper);
+        $response = $this->sendRequest(
+            'PUT',
+            $todoRequest,
+            $path
+        );
 
-        $response = $this->sendRequest('PUT', $updatedTodoRequest, $path);
-        $body = $this->validateAndParseResponse($response);
-
-        return $body;
+        return $this->validateAndParseResponse($response);
     }
 }

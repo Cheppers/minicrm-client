@@ -70,8 +70,6 @@ class SchemaEndpoint extends MiniCrmClient
 
         $body = $this->validateAndParseResponse($response);
 
-        $categories = SchemaResponse::__set_state($body);
-
-        return $categories;
+        return SchemaResponse::__set_state($body);
     }
 }

@@ -8,7 +8,6 @@ use Cheppers\MiniCrm\DataTypes\RequestBase;
 
 class TodoRequest extends RequestBase
 {
-
     /**
      * @var int
      */
@@ -23,16 +22,6 @@ class TodoRequest extends RequestBase
      * @var string
      */
     public $comment;
-
-    /**
-     * @var string
-     */
-    public $deadline;
-
-    /**
-     * @var int|string
-     */
-    public $userId;
 
     /**
      * {@inheritdoc}
@@ -51,12 +40,6 @@ class TodoRequest extends RequestBase
                     break;
                 case 'comment':
                     $data['Comment'] = $this->comment;
-                    break;
-                case 'deadline':
-                    $data['Deadline'] = $this->deadline;
-                    break;
-                case 'userId':
-                    $data['UserId'] = $this->userId;
                     break;
             }
         }

@@ -14,6 +14,7 @@ class SingleTodoResponse extends ResponseBase
     protected static $propertyMapping = [
         'Id' => 'id',
         'Status' => 'status',
+        'ProjectId' => 'projectId',
         'Comment' => 'comment',
         'Deadline' => 'deadline',
         'UserId' => 'userId',
@@ -49,6 +50,11 @@ class SingleTodoResponse extends ResponseBase
      * @var string
      */
     public $status;
+
+    /**
+     * @var int
+     */
+    public $projectId;
 
     /**
      * @var string

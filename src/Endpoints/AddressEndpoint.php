@@ -29,9 +29,8 @@ class AddressEndpoint extends MiniCrmClient
         );
 
         $body = $this->validateAndParseResponse($response);
-        $address = AddressResponse::__set_state($body);
 
-        return $address;
+        return AddressResponse::__set_state($body);
     }
 
     /**
@@ -71,8 +70,7 @@ class AddressEndpoint extends MiniCrmClient
     public function createAddress(AddressRequest $addressRequest): array
     {
         $response = $this->sendRequest('PUT', $addressRequest, '/Address');
-        $body = $this->validateAndParseResponse($response);
 
-        return $body;
+        return $this->validateAndParseResponse($response);
     }
 }

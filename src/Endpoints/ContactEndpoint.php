@@ -26,9 +26,8 @@ class ContactEndpoint extends MiniCrmClient
     public function getPerson(int $contactId): PersonResponse
     {
         $body = $this->getContact($contactId);
-        $contact = PersonResponse::__set_state($body);
 
-        return $contact;
+        return PersonResponse::__set_state($body);
     }
 
     /**
@@ -43,9 +42,8 @@ class ContactEndpoint extends MiniCrmClient
     public function getBusiness(int $contactId): BusinessResponse
     {
         $body = $this->getContact($contactId);
-        $contact = BusinessResponse::__set_state($body);
 
-        return $contact;
+        return BusinessResponse::__set_state($body);
     }
 
     /**
@@ -58,9 +56,8 @@ class ContactEndpoint extends MiniCrmClient
     public function createPerson(PersonRequest $personRequest): array
     {
         $response = $this->sendRequest('PUT', $personRequest, '/Contact');
-        $body = $this->validateAndParseResponse($response);
 
-        return $body;
+        return $this->validateAndParseResponse($response);
     }
 
     /**
@@ -73,9 +70,8 @@ class ContactEndpoint extends MiniCrmClient
     public function createBusiness(BusinessRequest $businessRequest): array
     {
         $response = $this->sendRequest('PUT', $businessRequest, '/Contact');
-        $body = $this->validateAndParseResponse($response);
 
-        return $body;
+        return $this->validateAndParseResponse($response);
     }
 
     /**
@@ -90,7 +86,7 @@ class ContactEndpoint extends MiniCrmClient
      *  a non-existing ContactId, or a Contact that is marked as primary on any
      *  Project.
      */
-    public function deleteContact(int $contactId): array
+    public function deletePerson(int $contactId): array
     {
         $response = $this->sendRequest(
             'GET',
@@ -98,9 +94,7 @@ class ContactEndpoint extends MiniCrmClient
             "/PurgePerson/{$contactId}"
         );
 
-        $body = $this->validateAndParseResponse($response);
-
-        return $body;
+        return $this->validateAndParseResponse($response);
     }
 
     /**
