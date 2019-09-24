@@ -5,7 +5,6 @@ namespace Cheppers\MiniCrm\Tests\Unit\Endpoints;
 
 use Cheppers\MiniCrm\DataTypes\Category\CategoryRequest;
 use Cheppers\MiniCrm\Endpoints\CategoryEndpoint;
-use Cheppers\MiniCrm\Endpoints\SchemaEndpoint;
 use Cheppers\MiniCrm\MiniCrmClient;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
@@ -78,7 +77,7 @@ class CategoryEndpointTest extends TestCase
             ),
             new RequestException(
                 'Error communicating with server.',
-                new Request('GET', '/Api/R3/Schema/Person')
+                new Request('GET', '/Api/R3/Category')
             )
         ]);
         $handlerStack = HandlerStack::create($mock);
