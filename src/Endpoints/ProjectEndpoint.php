@@ -102,6 +102,23 @@ class ProjectEndpoint extends MiniCrmClient
     /**
      * @param \Cheppers\MiniCrm\DataTypes\Project\ProjectRequest $projectRequest
      *
+     * @return \Cheppers\MiniCrm\DataTypes\Project\ProjectEmailsResponse
+     *
+     * @throws \Exception
+     */
+    public function getProjectEmails(ProjectRequest $projectRequest): ProjectEmailsResponse
+    {
+        $path = "/EmailList/{$projectRequest->id}";
+
+        $response = $this->sendRequest('GET', $projectRequest, $path);
+        $body = $this->validateAndParseResponse($response);
+
+        return ProjectEmailsResponse::__set_state($body);
+    }
+
+    /**
+     * @param \Cheppers\MiniCrm\DataTypes\Project\ProjectRequest $projectRequest
+     *
      * @return array
      *
      * @throws \Exception
@@ -142,22 +159,5 @@ class ProjectEndpoint extends MiniCrmClient
         );
 
         return $this->validateAndParseResponse($response);
-    }
-
-    /**
-     * @param \Cheppers\MiniCrm\DataTypes\Project\ProjectRequest $projectRequest
-     *
-     * @return \Cheppers\MiniCrm\DataTypes\Project\ProjectEmailsResponse
-     *
-     * @throws \Exception
-     */
-    public function getProjectEmails(ProjectRequest $projectRequest): ProjectEmailsResponse
-    {
-        $path = "/EmailList/{$projectRequest->id}";
-
-        $response = $this->sendRequest('GET', $projectRequest, $path);
-        $body = $this->validateAndParseResponse($response);
-
-        return ProjectEmailsResponse::__set_state($body);
     }
 }
