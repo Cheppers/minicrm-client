@@ -73,4 +73,23 @@ class AddressEndpoint extends MiniCrmClient
 
         return $this->validateAndParseResponse($response);
     }
+
+    /**
+     * @param \Cheppers\MiniCrm\DataTypes\Address\AddressRequest $addressRequest
+     *
+     * @return array
+     *
+     * @throws \Exception
+     */
+    public function updateAddress(AddressRequest $addressRequest): array
+    {
+        $path = "/Address/{$addressRequest->id}";
+        $address = $this->getAddress($addressRequest->id);
+
+        // ContactId can not be changed.
+        $addressRequest->contactId = $address->contactId;
+        $response = $this->sendRequest('PUT', $addressRequest, $path);
+
+        return $this->validateAndParseResponse($response);
+    }
 }

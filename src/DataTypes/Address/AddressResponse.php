@@ -16,9 +16,14 @@ class AddressResponse extends ResponseBase
         $instance = new static();
 
         foreach ($data as $key => $element) {
-            $instance->{$key} = $element;
+            $instance->{lcfirst($key)} = $element;
         }
 
         return $instance;
     }
+
+    /**
+     * @var int
+     */
+    public $contactId;
 }
