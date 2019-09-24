@@ -3,7 +3,6 @@ declare(strict_types = 1);
 
 namespace Cheppers\MiniCrm\Tests\Unit\Endpoints;
 
-use Cheppers\MiniCrm\DataTypes\Schema\SchemaResponse;
 use Cheppers\MiniCrm\Endpoints\SchemaEndpoint;
 use Cheppers\MiniCrm\MiniCrmClient;
 use GuzzleHttp\Client;
