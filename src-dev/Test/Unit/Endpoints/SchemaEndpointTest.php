@@ -215,14 +215,14 @@ class SchemaEndpointTest extends TestCase
         $schema = new SchemaEndpoint($client, $logger);
         $schema->setCredentials($this->clientOptions);
 
-        $business = $schema->getProjectSchema(1);
+        $project = $schema->getProjectSchema(1);
         if ($expected) {
             static::assertEquals(
                 json_encode($expected, JSON_PRETTY_PRINT),
-                json_encode($business->results, JSON_PRETTY_PRINT)
+                json_encode($project->results, JSON_PRETTY_PRINT)
             );
         } else {
-            static::assertNull($business);
+            static::assertNull($project);
         }
     }
 }
