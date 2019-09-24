@@ -4,8 +4,6 @@ declare(strict_types = 1);
 
 namespace Cheppers\MiniCrm\Endpoints;
 
-use Cheppers\MiniCrm\DataTypes\Address\AddressResponse;
-use Cheppers\MiniCrm\DataTypes\Address\StructuredAddressResponse;
 use Cheppers\MiniCrm\DataTypes\Project\ProjectEmailsResponse;
 use Cheppers\MiniCrm\DataTypes\Project\SingleProjectResponse;
 use Cheppers\MiniCrm\DataTypes\Project\ProjectRequest;
