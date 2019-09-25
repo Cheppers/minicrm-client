@@ -1,13 +1,14 @@
 <?php
 declare(strict_types = 1);
 
-namespace Cheppers\MiniCrm\Tests\Unit\Endpoints;
+namespace Cheppers\MiniCrm\Test\Unit\Endpoints;
 
 use Cheppers\MiniCrm\DataTypes\Category\CategoryRequest;
 use Cheppers\MiniCrm\DataTypes\Category\CategoryResponse;
 use Cheppers\MiniCrm\DataTypes\Category\DetailedCategoryResponse;
 use Cheppers\MiniCrm\Endpoints\CategoryEndpoint;
 use Cheppers\MiniCrm\MiniCrmClient;
+use Cheppers\MiniCrm\Test\Unit\MiniCrmBaseTest;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Handler\MockHandler;
@@ -23,29 +24,8 @@ use Psr\Log\NullLogger;
  *
  * @covers \Cheppers\MiniCrm\Endpoints\CategoryEndpoint
  */
-class CategoryEndpointTest extends TestCase
+class CategoryEndpointTest extends MiniCrmBaseTest
 {
-
-    /**
-     * @var MiniCrmClient
-     */
-    protected $client;
-
-    protected $clientOptions = [
-        'baseUri' => 'http://minicrm.hu',
-        'apiKey' => 'm-i-n-i',
-        'systemId' => 1234
-    ];
-    /**
-     * {@inheritdoc}
-     */
-    protected function setUp(): void
-    {
-        $client = new Client();
-        $logger = new NullLogger();
-        $this->client = new MiniCrmClient($client, $logger);
-    }
-
     public function casesCategories()
     {
         $categoryData = [
@@ -69,24 +49,12 @@ class CategoryEndpointTest extends TestCase
      */
     public function testGetCategories(array $expected, array $response)
     {
-        $container = [];
-        $history = Middleware::history($container);
-        $mock = new MockHandler([
-            new Response(
-                200,
-                ['Content-Type' => 'application/json; charset=utf-8'],
-                \GuzzleHttp\json_encode($response)
-            ),
-            new RequestException(
-                'Error communicating with server.',
-                new Request('GET', '/Api/R3/Category')
-            )
-        ]);
-        $handlerStack = HandlerStack::create($mock);
-        $handlerStack->push($history);
-
         $client = new Client([
-            'handler' => $handlerStack,
+            'handler' => $this->createMiniCrmMock(
+                $response,
+                'GET',
+                '/Api/R3/Category'
+            ),
         ]);
         $logger = new NullLogger();
         $category = new CategoryEndpoint($client, $logger);
@@ -145,24 +113,12 @@ class CategoryEndpointTest extends TestCase
      */
     public function testGetDetailedCategories(array $expected, array $response)
     {
-        $container = [];
-        $history = Middleware::history($container);
-        $mock = new MockHandler([
-            new Response(
-                200,
-                ['Content-Type' => 'application/json; charset=utf-8'],
-                \GuzzleHttp\json_encode($response)
-            ),
-            new RequestException(
-                'Error communicating with server.',
-                new Request('GET', '/Api/R3/Category')
-            )
-        ]);
-        $handlerStack = HandlerStack::create($mock);
-        $handlerStack->push($history);
-
         $client = new Client([
-            'handler' => $handlerStack,
+            'handler' => $this->createMiniCrmMock(
+                $response,
+                'GET',
+                '/Api/R3/Category'
+            ),
         ]);
         $logger = new NullLogger();
         $category = new CategoryEndpoint($client, $logger);

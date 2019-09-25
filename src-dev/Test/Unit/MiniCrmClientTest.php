@@ -1,14 +1,11 @@
 <?php
+
 declare(strict_types = 1);
 
-namespace Cheppers\MiniCrm\Tests\Unit;
+namespace Cheppers\MiniCrm\Test\Unit;
 
-use Cheppers\MiniCrm\DataTypes\Category\CategoryRequest;
 use Cheppers\MiniCrm\MiniCrmClient;
 use GuzzleHttp\Client;
-use GuzzleHttp\Handler\MockHandler;
-use GuzzleHttp\Middleware;
-use http\Env\Response;
 use Psr\Log\NullLogger;
 use PHPUnit\Framework\TestCase;
 
