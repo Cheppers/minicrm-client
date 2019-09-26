@@ -7,6 +7,7 @@ use Cheppers\MiniCrm\DataTypes\Schema\SchemaResponse;
 use Cheppers\MiniCrm\Endpoints\SchemaEndpoint;
 use Cheppers\MiniCrm\Test\Unit\MiniCrmBaseTest;
 use GuzzleHttp\Client;
+use GuzzleHttp\Psr7\Response;
 use Psr\Log\NullLogger;
 
 /**
@@ -17,151 +18,229 @@ use Psr\Log\NullLogger;
 class SchemaEndpointTest extends MiniCrmBaseTest
 {
 
-    public function casesPersonSchema()
-    {
-        $personData = [
-            'EmailType' => 'Text(1024)',
-            'PhoneType' => 'Text(1024)',
-            'FirstName' => 'Text(255)',
-            'LastName' => 'Text(255)',
-            'Email' => 'Text(128)',
-            'Phone' => 'Text(128)',
-            'Description' => 'Text(4096)',
-            'Deleted' => 'Boolean',
-        ];
-
-        return [
-            'person' => [
-                $personData,
-                $personData,
-            ],
-        ];
-    }
-
     /**
-     * @dataProvider casesPersonSchema
+     * @return array
      */
-    public function testGetPersonSchema(array $expected, array $response)
-    {
-        $client = new Client([
-            'handler' => $this->createMiniCrmMock(
-                $response,
-                'GET',
-                '/Api/R3/Schema/Person'
-            ),
-        ]);
-        $logger = new NullLogger();
-        $schema = new SchemaEndpoint($client, $logger);
-        $schema->setCredentials($this->clientOptions);
-
-        $person = $schema->getPersonSchema();
-
-        if ($expected) {
-            static::assertEquals(
-                json_encode(SchemaResponse::__set_state($expected), JSON_PRETTY_PRINT),
-                json_encode($person, JSON_PRETTY_PRINT)
-            );
-        } else {
-            static::assertNull($person);
-        }
-    }
-
-    public function casesBusinessSchema()
-    {
-        $businessData = [
-            'EmailType' => 'Text(1024)',
-            'PhoneType' => 'Text(1024)',
-            'Id' => 'Int',
-            'ParentId' => 'Int',
-            'Name' => 'Text(255)',
-            'Email' => 'Text(128)',
-            'Phone' => 'Text(128)',
-            'Description' => 'Text(4096)',
-            'Deleted' => 'Boolean',
-        ];
-
-        return [
-            'business' => [
-                $businessData,
-                $businessData,
-            ],
-        ];
-    }
-
-    /**
-     * @dataProvider casesBusinessSchema
-     */
-    public function testGetBusinessSchema(array $expected, array $response)
-    {
-        $client = new Client([
-            'handler' => $this->createMiniCrmMock(
-                $response,
-                'GET',
-                '/Api/R3/Schema/Business'
-            ),
-        ]);
-        $logger = new NullLogger();
-        $schema = new SchemaEndpoint($client, $logger);
-        $schema->setCredentials($this->clientOptions);
-
-        $business = $schema->getBusinessSchema();
-
-        if ($expected) {
-            static::assertEquals(
-                json_encode(SchemaResponse::__set_state($expected), JSON_PRETTY_PRINT),
-                json_encode($business, JSON_PRETTY_PRINT)
-            );
-        } else {
-            static::assertNull($business);
-        }
-    }
-
     public function casesProjectSchema()
     {
-        $projectData = [
-            'Id' => 'Int',
-            'CategoryId' => 'Array',
-            'ContactId' => 'Int',
-            'BusinessId' => 'Int',
-            'UserId' => 'Array',
-            'Name' => 'Text(512)',
-            'StatusUpdatedAt' => 'DateTime',
-            'Deleted' => 'Int',
-        ];
-
         return [
-            'project' => [
-                $projectData,
-                $projectData,
+            'empty' => [
+                SchemaResponse::__set_state([]),
+                [],
+                1
+            ],
+            'basic' => [
+                SchemaResponse::__set_state([
+                    'Id' => 'Int',
+                    'CategoryId' => [
+                        1 => 'Module 1',
+                        2 => 'Module 2',
+                        3 => 'Module 3',
+                    ],
+                    'ContactId' => 'Int',
+                    'BusinessId' => 'Int',
+                    'UserId' => [
+                        1 => 'User 1',
+                        2 => 'User 2',
+                        3 => 'User 3',
+                    ],
+                    'Name' => 'Text(512)',
+                    'StatusUpdatedAt' => 'DateTime',
+                    'Deleted' => 'Int',
+                ]),
+                [
+                    'Id' => 'Int',
+                    'CategoryId' => [
+                        1 => 'Module 1',
+                        2 => 'Module 2',
+                        3 => 'Module 3',
+                    ],
+                    'ContactId' => 'Int',
+                    'BusinessId' => 'Int',
+                    'UserId' => [
+                        1 => 'User 1',
+                        2 => 'User 2',
+                        3 => 'User 3',
+                    ],
+                    'Name' => 'Text(512)',
+                    'StatusUpdatedAt' => 'DateTime',
+                    'Deleted' => 'Int',
+                ],
+                42
             ],
         ];
     }
 
     /**
+     * @param $expected
+     * @param array $responseBody
+     * @param int $projectId
+     *
+     * @throws \Exception
+     *
      * @dataProvider casesProjectSchema
      */
-    public function testGetProjectSchema(array $expected, array $response)
-    {
-        $client = new Client([
-            'handler' => $this->createMiniCrmMock(
-                $response,
-                'GET',
-                '/Api/R3/Schema/Project/1'
+    public function testGetProjectSchema(
+        $expected,
+        array $responseBody,
+        int $projectId
+    ) {
+        $mock = $this->createMiniCrmMock([
+            new Response(
+                200,
+                ['Content-Type' => 'application/json; charset=utf-8'],
+                \GuzzleHttp\json_encode($responseBody)
             ),
         ]);
-        $logger = new NullLogger();
-        $schema = new SchemaEndpoint($client, $logger);
-        $schema->setCredentials($this->clientOptions);
+        $client = $mock['client'];
+        $schemaEndpoint = new SchemaEndpoint($client, new NullLogger());
+        $schemaEndpoint->setCredentials($this->clientOptions);
 
-        $project = $schema->getProjectSchema(1);
+        $schema = $schemaEndpoint->getProjectSchema($projectId);
 
-        if ($expected) {
-            static::assertEquals(
-                json_encode(SchemaResponse::__set_state($expected), JSON_PRETTY_PRINT),
-                json_encode($project, JSON_PRETTY_PRINT)
-            );
-        } else {
-            static::assertNull($project);
-        }
+        static::assertEquals(
+            json_encode($expected, JSON_PRETTY_PRINT),
+            json_encode($schema, JSON_PRETTY_PRINT)
+        );
+    }
+
+    /**
+     * @return array
+     */
+    public function casesPersonSchema()
+    {
+        return [
+            'empty' => [
+                SchemaResponse::__set_state([]),
+                []
+            ],
+            'basic' => [
+                SchemaResponse::__set_state([
+                    'EmailType' => 'Text(1024)',
+                    'PhoneType' => 'Text(1024)',
+                    'Id' => 'Int',
+                    'BusinessId' => 'Int',
+                    'ParentId' => 'Int',
+                    'FirstName' => 'Text(255)',
+                    'LastName' => 'Text(255)',
+                    'Email' => 'Text(128)',
+                    'Phone' => 'Text(128)',
+                    'Description' => 'Text(4096)',
+                    'Deleted' => 'Boolean',
+                ]),
+                [
+                    'EmailType' => 'Text(1024)',
+                    'PhoneType' => 'Text(1024)',
+                    'Id' => 'Int',
+                    'BusinessId' => 'Int',
+                    'ParentId' => 'Int',
+                    'FirstName' => 'Text(255)',
+                    'LastName' => 'Text(255)',
+                    'Email' => 'Text(128)',
+                    'Phone' => 'Text(128)',
+                    'Description' => 'Text(4096)',
+                    'Deleted' => 'Boolean',
+                ]
+            ],
+        ];
+    }
+
+    /**
+     * @param $expected
+     * @param array $responseBody
+     *
+     * @throws \Exception
+     *
+     * @dataProvider casesPersonSchema
+     */
+    public function testGetPersonSchema(
+        $expected,
+        array $responseBody
+    ) {
+        $mock = $this->createMiniCrmMock([
+            new Response(
+                200,
+                ['Content-Type' => 'application/json; charset=utf-8'],
+                \GuzzleHttp\json_encode($responseBody)
+            ),
+        ]);
+        $client = $mock['client'];
+        $schemaEndpoint = new SchemaEndpoint($client, new NullLogger());
+        $schemaEndpoint->setCredentials($this->clientOptions);
+
+        $schema = $schemaEndpoint->getPersonSchema();
+
+        static::assertEquals(
+            json_encode($expected, JSON_PRETTY_PRINT),
+            json_encode($schema, JSON_PRETTY_PRINT)
+        );
+    }
+
+    /**
+     * @return array
+     */
+    public function casesBusinessSchema()
+    {
+        return [
+            'empty' => [
+                SchemaResponse::__set_state([]),
+                []
+            ],
+            'basic' => [
+                SchemaResponse::__set_state([
+                    'EmailType' => 'Text(1024)',
+                    'PhoneType' => 'Text(1024)',
+                    'Id' => 'Int',
+                    'ParentId' => 'Int',
+                    'Name' => 'Text(1000)',
+                    'Email' => 'Text(128)',
+                    'Phone' => 'Text(128)',
+                    'Description' => 'Text(4096)',
+                    'Deleted' => 'Boolean',
+                ]),
+                [
+                    'EmailType' => 'Text(1024)',
+                    'PhoneType' => 'Text(1024)',
+                    'Id' => 'Int',
+                    'ParentId' => 'Int',
+                    'Name' => 'Text(1000)',
+                    'Email' => 'Text(128)',
+                    'Phone' => 'Text(128)',
+                    'Description' => 'Text(4096)',
+                    'Deleted' => 'Boolean',
+                ]
+            ],
+        ];
+    }
+
+    /**
+     * @param $expected
+     * @param array $responseBody
+     *
+     * @throws \Exception
+     *
+     * @dataProvider casesBusinessSchema
+     */
+    public function testGetBusinessSchema(
+        $expected,
+        array $responseBody
+    ) {
+        $mock = $this->createMiniCrmMock([
+            new Response(
+                200,
+                ['Content-Type' => 'application/json; charset=utf-8'],
+                \GuzzleHttp\json_encode($responseBody)
+            ),
+        ]);
+        $client = $mock['client'];
+        $schemaEndpoint = new SchemaEndpoint($client, new NullLogger());
+        $schemaEndpoint->setCredentials($this->clientOptions);
+
+        $schema = $schemaEndpoint->getBusinessSchema();
+
+        static::assertEquals(
+            json_encode($expected, JSON_PRETTY_PRINT),
+            json_encode($schema, JSON_PRETTY_PRINT)
+        );
     }
 }
