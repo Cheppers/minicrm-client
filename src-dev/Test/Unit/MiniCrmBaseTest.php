@@ -18,6 +18,23 @@ use PHPUnit\Framework\TestCase;
 abstract class MiniCrmBaseTest extends TestCase
 {
     /**
+     * @var array
+     */
+    public $clientOptions;
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function setUp(): void
+    {
+        $this->clientOptions = [
+            'baseUri' => 'http://minicrm.hu',
+            'apiKey' => 'm-i-n-i',
+            'systemId' => 1234
+        ];
+    }
+
+    /**
      * @param array $requests
      *
      * @return array
@@ -42,5 +59,14 @@ abstract class MiniCrmBaseTest extends TestCase
             'handlerStack' => $handlerStack,
             'mock' => $mock,
         ];
+    }
+
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function tearDown(): void
+    {
+        $this->clientOptions = [];
     }
 }

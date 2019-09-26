@@ -4,11 +4,12 @@ declare(strict_types = 1);
 namespace Cheppers\MiniCrm\Test\Unit\Endpoints;
 
 use Cheppers\MiniCrm\DataTypes\Template\SimpleTemplateItem;
+use Cheppers\MiniCrm\DataTypes\Template\TemplateItem;
 use Cheppers\MiniCrm\DataTypes\Template\TemplateRequest;
 use Cheppers\MiniCrm\DataTypes\Template\TemplateResponse;
 use Cheppers\MiniCrm\Endpoints\TemplateEndpoint;
 use Cheppers\MiniCrm\Test\Unit\MiniCrmBaseTest;
-use GuzzleHttp\Client;
+use GuzzleHttp\Psr7\Response;
 use Psr\Log\NullLogger;
 
 /**
@@ -20,106 +21,140 @@ class TemplateEndpointTest extends MiniCrmBaseTest
 {
     public function casesTemplate()
     {
-        $templateData = [
-            'id' => 1,
-            'type' => 'Test Template Type',
-            'name' => 'Test Template Name',
-            'url' => 'test@template.url',
-            'subject' => 'Test Template Subject',
-            'folderId' => 1,
-            'content' => 'Test Template content',
-        ];
-
         return [
-            'template' => [
-                $templateData,
-                $templateData,
+            'empty' => [
+                SimpleTemplateItem::__set_state([]),
+                [],
+                1
+            ],
+            'basic' => [
+                SimpleTemplateItem::__set_state([
+                    'Id' => 42,
+                    'Type' => 'Open',
+                    'Name' => 42,
+                    'Url' => 'Test Template 42',
+                    'Subject' => '2019-12-12 12:12:12',
+                    'FolderId' => 'Test User ID 42',
+                    'Content' => 'Test Template Item Content',
+                ]),
+                [
+                    'Id' => 42,
+                    'Type' => 'Open',
+                    'Name' => 42,
+                    'Url' => 'Test Template 42',
+                    'Subject' => '2019-12-12 12:12:12',
+                    'FolderId' => 'Test User ID 42',
+                    'Content' => 'Test Template Item Content',
+                ],
+                42
             ],
         ];
     }
 
     /**
+     * @param $expected
+     * @param array $responseBody
+     * @param $templateId
+     *
+     * @throws \Exception
+     *
      * @dataProvider casesTemplate
      */
-    public function testGetTemplate(array $expected, array $response)
-    {
-        $client = new Client([
-            'handler' => $this->createMiniCrmMock(
-                $response,
-                'GET',
-                '/Api/R3/Template'
+    public function testGetTemplate(
+        $expected,
+        array $responseBody,
+        $templateId
+    ) {
+        $mock = $this->createMiniCrmMock([
+            new Response(
+                200,
+                ['Content-Type' => 'application/json; charset=utf-8'],
+                \GuzzleHttp\json_encode($responseBody)
             ),
         ]);
-        $logger = new NullLogger();
-        $template = new TemplateEndpoint($client, $logger);
-        $template->setCredentials($this->clientOptions);
+        $client = $mock['client'];
+        $templateEndpoint = new TemplateEndpoint($client, new NullLogger());
+        $templateEndpoint->setCredentials($this->clientOptions);
 
-        $tmpl = $template->getTemplate($expected['id']);
+        $template = $templateEndpoint->getTemplate($templateId);
 
-        if ($expected) {
-            static::assertEquals(
-                json_encode(SimpleTemplateItem::__set_state($expected), JSON_PRETTY_PRINT),
-                json_encode($tmpl, JSON_PRETTY_PRINT)
-            );
-        } else {
-            static::assertNull($tmpl);
-        }
+        static::assertEquals(
+            json_encode($expected, JSON_PRETTY_PRINT),
+            json_encode($template, JSON_PRETTY_PRINT)
+        );
     }
 
     public function casesTemplateList()
     {
-        $templateData = [
-            'id' => 1,
-            'type' => 'Test Template Type',
-            'name' => 'Test Template Name',
-            'url' => 'test@template.url',
-            'subject' => 'Test Template Subject',
-            'folderId' => 1,
-            'content' => 'Test Template content',
-            'categoryId' => 1,
-        ];
-
         return [
-            'template' => [
+            'empty' => [
+                TemplateResponse::__set_state([]),
                 [
-                    'Results' => $templateData,
-                    'Count' => 1,
+                    'Results' => null,
+                    'Count' => null,
                 ],
+                TemplateRequest::__set_state([]),
+            ],
+            'basic' => [
+                TemplateResponse::__set_state([
+                    'Results' => [
+                        0 => TemplateItem::__set_state([
+                            'Id' => 1,
+                            'Type' => 1,
+                            'Name' => 1,
+                            'Url' => 1,
+                        ])
+                    ],
+                    'Count' => 1
+                ]),
                 [
-                    'Results' => $templateData,
-                    'Count' => 1,
+                    'Results' => [
+                        0 => [
+                            'Id' => 1,
+                            'Type' => 1,
+                            'Name' => 1,
+                            'Url' => 1,
+                        ],
+                    ],
+                    'Count' => 1
                 ],
+                TemplateRequest::__set_state([
+                    'categoryId' => 19,
+                ])
             ],
         ];
     }
 
     /**
+     * @param $expected
+     * @param array $responseBody
+     * @param $request
+     *
+     * @throws \Exception
+     *
      * @dataProvider casesTemplateList
      */
-    public function testGetTemplateList(array $expected, array $response)
-    {
-        $client = new Client([
-            'handler' => $this->createMiniCrmMock(
-                $response,
-                'GET',
-                '/Api/R3/Template'
+    public function testGetTemplateList(
+        $expected,
+        array $responseBody,
+        $request
+    ) {
+        $mock = $this->createMiniCrmMock([
+            new Response(
+                200,
+                ['Content-Type' => 'application/json; charset=utf-8'],
+                \GuzzleHttp\json_encode($responseBody)
             ),
         ]);
-        $logger = new NullLogger();
-        $template = new TemplateEndpoint($client, $logger);
-        $template->setCredentials($this->clientOptions);
+        $client = $mock['client'];
+        $templateEndpoint = new TemplateEndpoint($client, new NullLogger());
+        $templateEndpoint->setCredentials($this->clientOptions);
 
-        $tmpl = $template->getTemplateList(TemplateRequest::__set_state([
-            'categoryId' => $expected['Results']['categoryId'],
-        ]));
+        $template = $templateEndpoint->getTemplateList($request);
 
-        if ($expected) {
-            static::assertEquals(
-                json_encode(TemplateResponse::__set_state($expected), JSON_PRETTY_PRINT),
-                json_encode($tmpl, JSON_PRETTY_PRINT)
-            );
-        } else {
-            static::assertNull($tmpl);
-        }
+        static::assertEquals(
+            json_encode($expected, JSON_PRETTY_PRINT),
+            json_encode($template, JSON_PRETTY_PRINT)
+        );
     }
 }

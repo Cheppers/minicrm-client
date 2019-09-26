@@ -87,6 +87,8 @@ class TodoEndpointTest extends MiniCrmBaseTest
         ]);
         $client = $mock['client'];
         $todoEndpoint = new TodoEndpoint($client, new NullLogger());
+        $todoEndpoint->setCredentials($this->clientOptions);
+
         $todo = $todoEndpoint->getTodo($todoId);
 
         static::assertEquals(
@@ -165,6 +167,8 @@ class TodoEndpointTest extends MiniCrmBaseTest
         ]);
         $client = $mock['client'];
         $todoEndpoint = new TodoEndpoint($client, new NullLogger());
+        $todoEndpoint->setCredentials($this->clientOptions);
+
         $todo = $todoEndpoint->getTodoList($projectId);
 
         static::assertEquals(
@@ -224,6 +228,7 @@ class TodoEndpointTest extends MiniCrmBaseTest
         ]);
         $client = $mock['client'];
         $todoEndpoint = new TodoEndpoint($client, new NullLogger());
+        $todoEndpoint->setCredentials($this->clientOptions);
 
         $todo = $todoEndpoint->createTodo($request);
 
@@ -274,6 +279,7 @@ class TodoEndpointTest extends MiniCrmBaseTest
         ]);
         $client = $mock['client'];
         $todoEndpoint = new TodoEndpoint($client, new NullLogger());
+        $todoEndpoint->setCredentials($this->clientOptions);
 
         $todo = $todoEndpoint->updateTodo($request);
 
