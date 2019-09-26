@@ -5,6 +5,7 @@ namespace Cheppers\MiniCrm\Test\Unit\Endpoints;
 
 use Cheppers\MiniCrm\DataTypes\Category\CategoryRequest;
 use Cheppers\MiniCrm\DataTypes\Category\CategoryResponse;
+use Cheppers\MiniCrm\DataTypes\Category\DetailedCategoryItem;
 use Cheppers\MiniCrm\DataTypes\Category\DetailedCategoryResponse;
 use Cheppers\MiniCrm\Endpoints\CategoryEndpoint;
 use Cheppers\MiniCrm\MiniCrmClient;
@@ -26,114 +27,143 @@ use Psr\Log\NullLogger;
  */
 class CategoryEndpointTest extends MiniCrmBaseTest
 {
+
     public function casesCategories()
     {
-        $categoryData = [
-            '1' => 'Test Category 1',
-            '2' => 'Test Category 2',
-            '3' => 'Test Category 3',
-            '4' => 'Test Category 4',
-            '5' => 'Test Category 5',
-        ];
-
         return [
-            'category' => [
-                $categoryData,
-                $categoryData,
+            'empty' => [
+                CategoryResponse::__set_state([]),
+                [],
+                CategoryRequest::__set_state([])
+            ],
+            'basic' => [
+                CategoryResponse::__set_state([
+                    '1' => 'Test Category 1',
+                    '2' => 'Test Category 2',
+                    '3' => 'Test Category 3',
+                    '4' => 'Test Category 4',
+                    '5' => 'Test Category 5',
+                ]),
+                [
+                    '1' => 'Test Category 1',
+                    '2' => 'Test Category 2',
+                    '3' => 'Test Category 3',
+                    '4' => 'Test Category 4',
+                    '5' => 'Test Category 5',
+                ],
+                CategoryRequest::__set_state([])
             ],
         ];
     }
 
     /**
+     * @param $expected
+     * @param array $responseBody
+     * @param $request
+     *
+     * @throws \Exception
+     *
      * @dataProvider casesCategories
      */
-    public function testGetCategories(array $expected, array $response)
-    {
-        $client = new Client([
-            'handler' => $this->createMiniCrmMock(
-                $response,
-                'GET',
-                '/Api/R3/Category'
+    public function testGetCategories(
+        $expected,
+        array $responseBody,
+        $request
+    ) {
+        $mock = $this->createMiniCrmMock([
+            new Response(
+                200,
+                ['Content-Type' => 'application/json; charset=utf-8'],
+                \GuzzleHttp\json_encode($responseBody)
             ),
         ]);
-        $logger = new NullLogger();
-        $category = new CategoryEndpoint($client, $logger);
-        $category->setCredentials($this->clientOptions);
+        $client = $mock['client'];
+        $categoryEndpoint = new CategoryEndpoint($client, new NullLogger());
+        $categoryEndpoint->setCredentials($this->clientOptions);
 
-        $body = CategoryRequest::__set_state($expected);
-        $categories = $category->getCategories($body);
+        $todo = $categoryEndpoint->getCategories($request);
 
-        if ($expected) {
-            static::assertEquals(
-                json_encode(CategoryResponse::__set_state($expected), JSON_PRETTY_PRINT),
-                json_encode($categories, JSON_PRETTY_PRINT)
-            );
-        } else {
-            static::assertNull($categories);
-        }
+        static::assertEquals(
+            json_encode($expected, JSON_PRETTY_PRINT),
+            json_encode($todo, JSON_PRETTY_PRINT)
+        );
     }
 
     public function casesDetailedCategories()
     {
-        $categoryData = [
-            '1' => [
-                '1' => [
-                    'id' => 1,
-                    'orderId' => 1,
-                    'name' => 'Test Category 1',
-                    'type' => 'Test Category Type',
-                    'senderName' => 'Test Category Sender Name',
-                    'senderEmail' => 'test@categsender.mail',
-                    'phone' => '123456789',
-                ]
-            ],
-            '2' => [
-                '2' => [
-                    'id' => 2,
-                    'orderId' => 2,
-                    'name' => 'Test Category 2',
-                    'type' => 'Test Category Type',
-                    'senderName' => 'Test Category Sender Name',
-                    'senderEmail' => 'test@categsender.mail',
-                    'phone' => '123456789',
-                ]
-            ],
-        ];
-
         return [
-            'category' => [
-                $categoryData,
-                $categoryData,
+            'empty' => [
+                DetailedCategoryResponse::__set_state([
+                    'Results' => [],
+                ]),
+                [
+                    'Results' => [],
+                ],
+                CategoryRequest::__set_state([])
+            ],
+            'basic' => [
+                DetailedCategoryResponse::__set_state([
+                    'Results' => [
+                        0 => DetailedCategoryItem::__set_state([
+                            'Id' => 42,
+                            'OrderId' => 42,
+                            'Name' => 'Test Category Name',
+                            'Type' => 'Test Category Type',
+                            'SenderName' => 'Test Sender Name',
+                            'SenderEmail' => 'Test Sender Email',
+                            'Phone' => '123456789',
+                        ])
+                    ]
+                ]),
+                [
+                    'Results' => [
+                        0 => [
+                            'Id' => 42,
+                            'OrderId' => 42,
+                            'Name' => 'Test Category Name',
+                            'Type' => 'Test Category Type',
+                            'SenderName' => 'Test Sender Name',
+                            'SenderEmail' => 'Test Sender Email',
+                            'Phone' => '123456789',
+                        ],
+                    ]
+                ],
+                CategoryRequest::__set_state([])
             ],
         ];
     }
 
+
     /**
+     * @param $expected
+     * @param array $responseBody
+     * @param $request
+     *
+     * @throws \Exception
+     *
      * @dataProvider casesDetailedCategories
      */
-    public function testGetDetailedCategories(array $expected, array $response)
-    {
-        $client = new Client([
-            'handler' => $this->createMiniCrmMock(
-                $response,
-                'GET',
-                '/Api/R3/Category'
+    public function testGetDetailedCategories(
+        $expected,
+        array $responseBody,
+        $request
+    ) {
+        $mock = $this->createMiniCrmMock([
+            new Response(
+                200,
+                ['Content-Type' => 'application/json; charset=utf-8'],
+                \GuzzleHttp\json_encode($responseBody)
             ),
         ]);
-        $logger = new NullLogger();
-        $category = new CategoryEndpoint($client, $logger);
-        $category->setCredentials($this->clientOptions);
+        $client = $mock['client'];
+        $categoryEndpoint = new CategoryEndpoint($client, new NullLogger());
+        $categoryEndpoint->setCredentials($this->clientOptions);
 
-        $body = CategoryRequest::__set_state($expected);
-        $categories = $category->getCategories($body, true);
+        $todo = $categoryEndpoint->getCategories($request, true);
 
-        if ($expected) {
-            static::assertEquals(
-                json_encode(DetailedCategoryResponse::__set_state($expected), JSON_PRETTY_PRINT),
-                json_encode($categories, JSON_PRETTY_PRINT)
-            );
-        } else {
-            static::assertNull($categories);
-        }
+        static::assertEquals(
+            json_encode($expected, JSON_PRETTY_PRINT),
+            json_encode($todo, JSON_PRETTY_PRINT)
+        );
     }
 }
