@@ -6,6 +6,7 @@ namespace Cheppers\MiniCrm\Test\Unit\Endpoints;
 
 use Cheppers\MiniCrm\DataTypes\Contact\Business\BusinessRequest;
 use Cheppers\MiniCrm\DataTypes\Contact\Business\BusinessResponse;
+use Cheppers\MiniCrm\DataTypes\Contact\ContactRequestBase;
 use Cheppers\MiniCrm\DataTypes\Contact\Person\PersonRequest;
 use Cheppers\MiniCrm\DataTypes\Contact\Person\PersonResponse;
 use Cheppers\MiniCrm\Endpoints\ContactEndpoint;
@@ -457,6 +458,57 @@ class ContactEndpointTest extends MiniCrmBaseTest
         $contactEndpoint->setCredentials($this->clientOptions);
 
         $contact = $contactEndpoint->updateBusiness($request);
+
+        static::assertEquals(
+            json_encode($expected, JSON_PRETTY_PRINT),
+            json_encode($contact, JSON_PRETTY_PRINT)
+        );
+    }
+
+    /**
+     * @return array
+     */
+    public function casesDeletePerson()
+    {
+        return [
+            'basic' => [
+                [
+                    0 => 'Successful deletion.'
+                ],
+                [
+                    0 => 'Successful deletion.',
+                ],
+                42
+            ],
+        ];
+    }
+
+    /**
+     * @param $expected
+     * @param array $responseBody
+     * @param $request
+     *
+     * @throws \Exception
+     *
+     * @dataProvider casesDeletePerson
+     */
+    public function testDeletePerson(
+        $expected,
+        array $responseBody,
+        $personId
+    ) {
+        $mock = $this->createMiniCrmMock([
+            new Response(
+                200,
+                ['Content-Type' => 'application/json; charset=utf-8'],
+                \GuzzleHttp\json_encode($responseBody)
+            ),
+        ]);
+        $client = $mock['client'];
+        $contactEndpoint = new ContactEndpoint($client, new NullLogger());
+        $contactEndpoint->setCredentials($this->clientOptions);
+
+        $contact = $contactEndpoint->deletePerson($personId);
 
         static::assertEquals(
             json_encode($expected, JSON_PRETTY_PRINT),
