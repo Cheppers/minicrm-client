@@ -441,4 +441,60 @@ class ProjectEndpointTest extends MiniCrmBaseTest
             json_encode($project, JSON_PRETTY_PRINT)
         );
     }
+
+    /**
+     * @return array
+     */
+    public function casesProjectCreate()
+    {
+        return [
+            'basic' => [
+                [
+                    'Id' => 42,
+                ],
+                [
+                    'Id' => 42,
+                ],
+                ProjectRequest::__set_state([
+                    'categoryId' => 99,
+                    'contactId' => 99,
+                    'userId' => 'Test User',
+                    'name' => 'Test Name',
+                ])
+            ],
+        ];
+    }
+
+    /**
+     * @param $expected
+     * @param array $responseBody
+     * @param $request
+     *
+     * @throws \Exception
+     *
+     * @dataProvider casesProjectCreate
+     */
+    public function testCreateProject(
+        $expected,
+        array $responseBody,
+        $request
+    ) {
+        $mock = $this->createMiniCrmMock([
+            new Response(
+                200,
+                ['Content-Type' => 'application/json; charset=utf-8'],
+                \GuzzleHttp\json_encode($responseBody)
+            ),
+        ]);
+        $client = $mock['client'];
+        $projectEndpoint = new ProjectEndpoint($client, new NullLogger());
+        $projectEndpoint->setCredentials($this->clientOptions);
+
+        $project = $projectEndpoint->createProject($request);
+
+        static::assertEquals(
+            json_encode($expected, JSON_PRETTY_PRINT),
+            json_encode($project, JSON_PRETTY_PRINT)
+        );
+    }
 }
