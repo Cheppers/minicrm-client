@@ -4,28 +4,24 @@ declare(strict_types = 1);
 
 namespace Cheppers\MiniCrm\Test\Unit;
 
+use Cheppers\MiniCrm\DataTypes\RequestBase;
+use Cheppers\MiniCrm\DataTypes\Schema\SchemaRequest;
 use Cheppers\MiniCrm\MiniCrmClient;
 use GuzzleHttp\Client;
+use GuzzleHttp\Psr7\Response;
 use Psr\Log\NullLogger;
-use PHPUnit\Framework\TestCase;
 
 /**
  * @group MiniCrmClient
  *
  * @covers \Cheppers\MiniCrm\MiniCrmClient
  */
-class MiniCrmClientTest extends TestCase
+class MiniCrmClientTest extends MiniCrmBaseTest
 {
     /**
      * @var MiniCrmClient
      */
     protected $client;
-
-    protected $clientOptions = [
-        'baseUri' => 'http://minicrm.hu',
-        'apiKey' => 'm-i-n-i',
-        'systemId' => 1234
-    ];
 
     /**
      * {@inheritdoc}
@@ -104,4 +100,61 @@ class MiniCrmClientTest extends TestCase
         static::assertEquals('m-i-n-i', $this->client->getApiKey());
         static::assertEquals(1234, $this->client->getSystemId());
     }
+
+    public function casesSendRequest()
+    {
+        return [
+            'basic' => [
+                new Response(
+                    200,
+                    ['Content-Type' => 'application/json; charset=utf-8'],
+                    \GuzzleHttp\json_encode([0 => 'OK'])
+                ),
+                [
+                    0 => 'OK',
+                ],
+                [
+                    'method' => 'GET',
+                    'request' => SchemaRequest::__set_state([]),
+                    'path' => '/test',
+                ],
+            ],
+        ];
+    }
+
+    /**
+     * @param $expected
+     * @param $responseBody
+     * @param $parameters
+     *
+     * @dataProvider casesSendRequest
+     */
+    public function testSendRequest(
+        $expected,
+        $responseBody,
+        $parameters
+    ) {
+        $mock = $this->createMiniCrmMock([
+            new Response(
+                200,
+                ['Content-Type' => 'application/json; charset=utf-8'],
+                \GuzzleHttp\json_encode($responseBody)
+            ),
+        ]);
+        $client = $mock['client'];
+        $miniCrmClient = new MiniCrmClient($client, new NullLogger());
+        $miniCrmClient->setCredentials($this->clientOptions);
+
+        $result = $miniCrmClient->sendRequest(
+            $parameters['method'],
+            $parameters['request'],
+            $parameters['path']
+        );
+
+        static::assertSame(
+            json_encode($expected, JSON_PRETTY_PRINT),
+            json_encode($result, JSON_PRETTY_PRINT)
+        );
+    }
+
 }

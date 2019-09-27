@@ -20,7 +20,7 @@ abstract class MiniCrmBaseTest extends TestCase
     /**
      * @var array
      */
-    public $clientOptions;
+    public $clientOptions = [];
 
     /**
      * {@inheritdoc}
