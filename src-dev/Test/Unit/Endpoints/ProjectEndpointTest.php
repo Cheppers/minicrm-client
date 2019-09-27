@@ -4,7 +4,6 @@ declare(strict_types = 1);
 
 namespace Cheppers\MiniCrm\Test\Unit\Endpoints;
 
-use Cheppers\MiniCrm\DataTypes\Project\ProjectRequest;
 use Cheppers\MiniCrm\DataTypes\Project\ProjectResponse;
 use Cheppers\MiniCrm\DataTypes\Project\SimpleProjectItem;
 use Cheppers\MiniCrm\DataTypes\Project\SingleProjectResponse;
@@ -102,7 +101,7 @@ class ProjectEndpointTest extends MiniCrmBaseTest
     /**
      * @return array
      */
-    public function casesGetProjectsByCategoryId()
+    public function casesGetProjectsById()
     {
         return [
             'empty' => [
@@ -150,16 +149,16 @@ class ProjectEndpointTest extends MiniCrmBaseTest
     /**
      * @param $expected
      * @param array $responseBody
-     * @param int $categoryId
+     * @param int $id
      *
      * @throws \Exception
      *
-     * @dataProvider casesGetProjectsByCategoryId
+     * @dataProvider casesGetProjectsById
      */
     public function testGetProjectsByCategoryId(
         $expected,
         array $responseBody,
-        int $categoryId
+        int $id
     ) {
         $mock = $this->createMiniCrmMock([
             new Response(
@@ -172,7 +171,121 @@ class ProjectEndpointTest extends MiniCrmBaseTest
         $projectEndpoint = new ProjectEndpoint($client, new NullLogger());
         $projectEndpoint->setCredentials($this->clientOptions);
 
-        $project = $projectEndpoint->getProjectsByCategoryId($categoryId);
+        $project = $projectEndpoint->getProjectsByCategoryId($id);
+
+        static::assertEquals(
+            json_encode($expected, JSON_PRETTY_PRINT),
+            json_encode($project, JSON_PRETTY_PRINT)
+        );
+    }
+
+    /**
+     * @param $expected
+     * @param array $responseBody
+     * @param int $id
+     *
+     * @throws \Exception
+     *
+     * @dataProvider casesGetProjectsById
+     */
+    public function testGetProjectsByUserId(
+        $expected,
+        array $responseBody,
+        int $id
+    ) {
+        $mock = $this->createMiniCrmMock([
+            new Response(
+                200,
+                ['Content-Type' => 'application/json; charset=utf-8'],
+                \GuzzleHttp\json_encode($responseBody)
+            ),
+        ]);
+        $client = $mock['client'];
+        $projectEndpoint = new ProjectEndpoint($client, new NullLogger());
+        $projectEndpoint->setCredentials($this->clientOptions);
+
+        $project = $projectEndpoint->getProjectsByUserId($id);
+
+        static::assertEquals(
+            json_encode($expected, JSON_PRETTY_PRINT),
+            json_encode($project, JSON_PRETTY_PRINT)
+        );
+    }
+
+    /**
+     * @return array
+     */
+    public function casesGetProjectsByStatusGroup()
+    {
+        return [
+            'empty' => [
+                ProjectResponse::__set_state([]),
+                [
+                    'Results' => null,
+                    'Count' => null,
+                ],
+                'Success',
+            ],
+            'basic' => [
+                ProjectResponse::__set_state([
+                    'Results' => [
+                        0 => SimpleProjectItem::__set_state([
+                            'Id' => 42,
+                            'ContactId' => 42,
+                            'Name' => 'Test Simple Project Name',
+                            'Url' => 'http://test.url',
+                            'StatusId' => 42,
+                            'UserId' => 1234,
+                            'Deleted' => 0,
+                        ])
+                    ],
+                    'Count' => 1
+                ]),
+                [
+                    'Results' => [
+                        0 => [
+                            'Id' => 42,
+                            'ContactId' => 42,
+                            'Name' => 'Test Simple Project Name',
+                            'Url' => 'http://test.url',
+                            'StatusId' => 42,
+                            'UserId' => 1234,
+                            'Deleted' => 0,
+                        ],
+                    ],
+                    'Count' => 1
+                ],
+                'Success',
+            ],
+        ];
+    }
+
+    /**
+     * @param $expected
+     * @param array $responseBody
+     * @param string $statusGroup
+     *
+     * @throws \Exception
+     *
+     * @dataProvider casesGetProjectsByStatusGroup
+     */
+    public function testGetProjectsByStatusGroup(
+        $expected,
+        array $responseBody,
+        string $statusGroup
+    ) {
+        $mock = $this->createMiniCrmMock([
+            new Response(
+                200,
+                ['Content-Type' => 'application/json; charset=utf-8'],
+                \GuzzleHttp\json_encode($responseBody)
+            ),
+        ]);
+        $client = $mock['client'];
+        $projectEndpoint = new ProjectEndpoint($client, new NullLogger());
+        $projectEndpoint->setCredentials($this->clientOptions);
+
+        $project = $projectEndpoint->getProjectsByStatusGroup($statusGroup);
 
         static::assertEquals(
             json_encode($expected, JSON_PRETTY_PRINT),
