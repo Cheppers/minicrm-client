@@ -4,6 +4,7 @@ declare(strict_types = 1);
 
 namespace Cheppers\MiniCrm\Test\Unit\Endpoints;
 
+use Cheppers\MiniCrm\DataTypes\Contact\Business\BusinessRequest;
 use Cheppers\MiniCrm\DataTypes\Contact\Business\BusinessResponse;
 use Cheppers\MiniCrm\DataTypes\Contact\Person\PersonRequest;
 use Cheppers\MiniCrm\DataTypes\Contact\Person\PersonResponse;
@@ -225,14 +226,14 @@ class ContactEndpointTest extends MiniCrmBaseTest
                     'Id' => 42,
                 ],
                 PersonRequest::__set_state([
-                    'Email' => 'szem@el.y1',
-                    'EmailType' => 'teszt email type',
-                    'Phone' => '+363123141',
-                    'PhoneType' => 'teszt phone type',
-                    'FirstName' => 'személy2',
-                    'LastName' => 'személy1last',
-                    'Position' => 'Értékesítés',
-                    'Description' => 'teszt adat',
+                    'Email' => 'test@em.ail',
+                    'EmailType' => 'Test Email Type',
+                    'Phone' => '123456789',
+                    'PhoneType' => 'Test Phone Type',
+                    'FirstName' => 'Test First Name',
+                    'LastName' => 'Test Last Name',
+                    'Position' => 'Test Position',
+                    'Description' => 'Test Description',
                 ])
             ],
         ];
@@ -264,6 +265,78 @@ class ContactEndpointTest extends MiniCrmBaseTest
         $contactEndpoint->setCredentials($this->clientOptions);
 
         $contact = $contactEndpoint->createPerson($request);
+
+        static::assertEquals(
+            json_encode($expected, JSON_PRETTY_PRINT),
+            json_encode($contact, JSON_PRETTY_PRINT)
+        );
+    }
+
+    /**
+     * @return array
+     */
+    public function casesBusinessCreate()
+    {
+        return [
+            'empty' => [
+                [],
+                [],
+                BusinessRequest::__set_state([])
+            ],
+            'basic' => [
+                [
+                    'Id' => 42,
+                ],
+                [
+                    'Id' => 42,
+                ],
+                BusinessRequest::__set_state([
+                    'Email' => 'test@em.ail',
+                    'EmailType' => 'Test Email Type',
+                    'Phone' => '123456789',
+                    'PhoneType' => 'Test Phone Type',
+                    'Name' => 'Test Business Name',
+                    'Description' => 'Test Description',
+                    'Url' => 'http://test.url',
+                    'Industry' => 'Test Industry',
+                    'Region' => 'Test Region',
+                    'VatNumber' => 'Test Vat Number',
+                    'RegistrationNumber' => 'Test Registration Number',
+                    'BankAccount' => 'Test Bank Account Number',
+                    'Swift' => 'Test Swift Number',
+                    'Employees' => 99,
+                    'YearlyRevenue' => 42,
+                ])
+            ],
+        ];
+    }
+
+    /**
+     * @param $expected
+     * @param array $responseBody
+     * @param $request
+     *
+     * @throws \Exception
+     *
+     * @dataProvider casesBusinessCreate
+     */
+    public function testCreateBusiness(
+        $expected,
+        array $responseBody,
+        $request
+    ) {
+        $mock = $this->createMiniCrmMock([
+            new Response(
+                200,
+                ['Content-Type' => 'application/json; charset=utf-8'],
+                \GuzzleHttp\json_encode($responseBody)
+            ),
+        ]);
+        $client = $mock['client'];
+        $contactEndpoint = new ContactEndpoint($client, new NullLogger());
+        $contactEndpoint->setCredentials($this->clientOptions);
+
+        $contact = $contactEndpoint->createBusiness($request);
 
         static::assertEquals(
             json_encode($expected, JSON_PRETTY_PRINT),
