@@ -343,4 +343,64 @@ class ContactEndpointTest extends MiniCrmBaseTest
             json_encode($contact, JSON_PRETTY_PRINT)
         );
     }
+
+    /**
+     * @return array
+     */
+    public function casesUpdatePerson()
+    {
+        return [
+            'basic' => [
+                [
+                    'Id' => 299,
+                ],
+                [
+                    'Id' => 299,
+                ],
+                PersonRequest::__set_state([
+                    'id' => 299,
+                    'firstName' => 'Test First Name Updated',
+                ]),
+            ],
+        ];
+    }
+
+    /**
+     * @param $expected
+     * @param array $responseBody
+     * @param $request
+     *
+     * @throws \Exception
+     *
+     * @dataProvider casesUpdatePerson
+     */
+    public function testUpdatePerson(
+        $expected,
+        array $responseBody,
+        $request
+    ) {
+        $mock = $this->createMiniCrmMock([
+            new Response(
+                200,
+                ['Content-Type' => 'application/json; charset=utf-8'],
+                \GuzzleHttp\json_encode($responseBody)
+            ),
+            // Mocking response of inner method getPerson().
+            new Response(
+                200,
+                ['Content-Type' => 'application/json; charset=utf-8'],
+                \GuzzleHttp\json_encode($responseBody)
+            ),
+        ]);
+        $client = $mock['client'];
+        $contactEndpoint = new ContactEndpoint($client, new NullLogger());
+        $contactEndpoint->setCredentials($this->clientOptions);
+
+        $contact = $contactEndpoint->updatePerson($request);
+
+        static::assertEquals(
+            json_encode($expected, JSON_PRETTY_PRINT),
+            json_encode($contact, JSON_PRETTY_PRINT)
+        );
+    }
 }
