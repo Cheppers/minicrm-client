@@ -7,7 +7,6 @@ namespace Cheppers\MiniCrm\Test\Unit\Endpoints;
 use Cheppers\MiniCrm\DataTypes\Schema\SchemaResponse;
 use Cheppers\MiniCrm\Endpoints\SchemaEndpoint;
 use Cheppers\MiniCrm\Test\Unit\MiniCrmBaseTest;
-use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Response;
 use Psr\Log\NullLogger;
 

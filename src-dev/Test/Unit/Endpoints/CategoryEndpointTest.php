@@ -9,16 +9,8 @@ use Cheppers\MiniCrm\DataTypes\Category\CategoryResponse;
 use Cheppers\MiniCrm\DataTypes\Category\DetailedCategoryItem;
 use Cheppers\MiniCrm\DataTypes\Category\DetailedCategoryResponse;
 use Cheppers\MiniCrm\Endpoints\CategoryEndpoint;
-use Cheppers\MiniCrm\MiniCrmClient;
 use Cheppers\MiniCrm\Test\Unit\MiniCrmBaseTest;
-use GuzzleHttp\Client;
-use GuzzleHttp\Exception\RequestException;
-use GuzzleHttp\Handler\MockHandler;
-use GuzzleHttp\HandlerStack;
-use GuzzleHttp\Middleware;
-use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
-use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 
 /**
