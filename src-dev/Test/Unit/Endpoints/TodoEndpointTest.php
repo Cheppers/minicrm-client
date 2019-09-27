@@ -272,6 +272,15 @@ class TodoEndpointTest extends MiniCrmBaseTest
         $request
     ) {
         $mock = $this->createMiniCrmMock([
+            // Mocking response of inner method getTodo().
+            new Response(
+                200,
+                ['Content-Type' => 'application/json; charset=utf-8'],
+                \GuzzleHttp\json_encode(SingleTodoResponse::__set_state([
+                    'id' => $request->id,
+                    'projectId' => 9999,
+                ]))
+            ),
             new Response(
                 200,
                 ['Content-Type' => 'application/json; charset=utf-8'],

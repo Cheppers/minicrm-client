@@ -330,7 +330,6 @@ class AddressEndpointTest extends MiniCrmBaseTest
                 AddressRequest::__set_state([
                     'id' => 42,
                     'name' => 'Test Name Updated',
-                    'contactId' => 9999,
                 ])
             ],
         ];
@@ -351,6 +350,15 @@ class AddressEndpointTest extends MiniCrmBaseTest
         $request
     ) {
         $mock = $this->createMiniCrmMock([
+            // Mocking response of inner method getAddress().
+            new Response(
+                200,
+                ['Content-Type' => 'application/json; charset=utf-8'],
+                \GuzzleHttp\json_encode(AddressResponse::__set_state([
+                    'id' => $request->id,
+                    'contactId' => 9999,
+                ]))
+            ),
             new Response(
                 200,
                 ['Content-Type' => 'application/json; charset=utf-8'],
@@ -361,21 +369,6 @@ class AddressEndpointTest extends MiniCrmBaseTest
         $addressEndpoint = new AddressEndpoint($client, new NullLogger());
         $addressEndpoint->setCredentials($this->clientOptions);
 
-        $m = $this->getMockBuilder('\Cheppers\MiniCrm\Endpoints\AddressEndpoint')
-            ->setConstructorArgs([$client, new NullLogger()])
-            ->onlyMethods(['getAddress'])
-            ->getMock();
-/*
-        $m->expects($this->once())
-            ->method('getAddress')
-            ->with($this->returnValue(AddressResponse::__set_state([
-                'ContactId' => 42,
-            ])));
-*/
-        $m->method('getAddress')->willReturn(AddressResponse::__set_state([
-            'ContactId' => 42,
-        ]));
-        var_dump($m);
         $address = $addressEndpoint->updateAddress($request);
 
         static::assertEquals(
