@@ -376,4 +376,69 @@ class ProjectEndpointTest extends MiniCrmBaseTest
             json_encode($project, JSON_PRETTY_PRINT)
         );
     }
+
+
+    /**
+     * @return array
+     */
+    public function casesProjectUpdate()
+    {
+        return [
+            'basic' => [
+                [
+                    'Id' => 6658,
+                ],
+                [
+                    'Id' => 6658,
+                ],
+                ProjectRequest::__set_state([
+                    'id' => 6658,
+                    'name' => 'Test Name',
+                ])
+            ],
+        ];
+    }
+
+    /**
+     * @param $expected
+     * @param array $responseBody
+     * @param $request
+     *
+     * @throws \Exception
+     *
+     * @dataProvider casesProjectUpdate
+     */
+    public function testUpdateProject(
+        $expected,
+        array $responseBody,
+        $request
+    ) {
+        $mock = $this->createMiniCrmMock([
+            // Mocking response of inner method getProject().
+            new Response(
+                200,
+                ['Content-Type' => 'application/json; charset=utf-8'],
+                \GuzzleHttp\json_encode(SingleProjectResponse::__set_state([
+                    'id' => $request->id,
+                    'categoryId' => 9999,
+                    'contactId' => 9999,
+                ]))
+            ),
+            new Response(
+                200,
+                ['Content-Type' => 'application/json; charset=utf-8'],
+                \GuzzleHttp\json_encode($responseBody)
+            ),
+        ]);
+        $client = $mock['client'];
+        $projectEndpoint = new ProjectEndpoint($client, new NullLogger());
+        $projectEndpoint->setCredentials($this->clientOptions);
+
+        $project = $projectEndpoint->updateProject($request);
+
+        static::assertEquals(
+            json_encode($expected, JSON_PRETTY_PRINT),
+            json_encode($project, JSON_PRETTY_PRINT)
+        );
+    }
 }
