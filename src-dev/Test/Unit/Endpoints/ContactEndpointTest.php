@@ -6,7 +6,6 @@ namespace Cheppers\MiniCrm\Test\Unit\Endpoints;
 
 use Cheppers\MiniCrm\DataTypes\Contact\Business\BusinessRequest;
 use Cheppers\MiniCrm\DataTypes\Contact\Business\BusinessResponse;
-use Cheppers\MiniCrm\DataTypes\Contact\ContactRequestBase;
 use Cheppers\MiniCrm\DataTypes\Contact\Person\PersonRequest;
 use Cheppers\MiniCrm\DataTypes\Contact\Person\PersonResponse;
 use Cheppers\MiniCrm\Endpoints\ContactEndpoint;
@@ -15,7 +14,7 @@ use GuzzleHttp\Psr7\Response;
 use Psr\Log\NullLogger;
 
 /**
- * @group MiniCrmClient
+ * @group Endpoints
  *
  * @covers \Cheppers\MiniCrm\Endpoints\ContactEndpoint
  */
@@ -86,7 +85,7 @@ class ContactEndpointTest extends MiniCrmBaseTest
     /**
      * @param $expected
      * @param array $responseBody
-     * @param $contactId
+     * @param int $contactId
      *
      * @throws \Exception
      *
@@ -178,7 +177,7 @@ class ContactEndpointTest extends MiniCrmBaseTest
     /**
      * @param $expected
      * @param array $responseBody
-     * @param $contactId
+     * @param int $contactId
      *
      * @throws \Exception
      *
@@ -486,7 +485,7 @@ class ContactEndpointTest extends MiniCrmBaseTest
     /**
      * @param $expected
      * @param array $responseBody
-     * @param $request
+     * @param int $personId
      *
      * @throws \Exception
      *
@@ -495,7 +494,7 @@ class ContactEndpointTest extends MiniCrmBaseTest
     public function testDeletePerson(
         $expected,
         array $responseBody,
-        $personId
+        int $personId
     ) {
         $mock = $this->createMiniCrmMock([
             new Response(

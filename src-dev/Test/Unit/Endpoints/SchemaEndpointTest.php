@@ -11,7 +11,7 @@ use GuzzleHttp\Psr7\Response;
 use Psr\Log\NullLogger;
 
 /**
- * @group MiniCrmClient
+ * @group Endpoints
  *
  * @covers \Cheppers\MiniCrm\Endpoints\SchemaEndpoint
  */

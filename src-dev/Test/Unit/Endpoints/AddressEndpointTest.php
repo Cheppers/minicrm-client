@@ -14,7 +14,7 @@ use GuzzleHttp\Psr7\Response;
 use Psr\Log\NullLogger;
 
 /**
- * @group MiniCrmClient
+ * @group Endpoints
  *
  * @covers \Cheppers\MiniCrm\Endpoints\AddressEndpoint
  */
@@ -74,7 +74,7 @@ class AddressEndpointTest extends MiniCrmBaseTest
     /**
      * @param $expected
      * @param array $responseBody
-     * @param $addressId
+     * @param int $addressId
      *
      * @throws \Exception
      *

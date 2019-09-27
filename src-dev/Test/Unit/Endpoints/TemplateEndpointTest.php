@@ -14,7 +14,7 @@ use GuzzleHttp\Psr7\Response;
 use Psr\Log\NullLogger;
 
 /**
- * @group MiniCrmClient
+ * @group Endpoints
  *
  * @covers \Cheppers\MiniCrm\Endpoints\TemplateEndpoint
  */
@@ -55,7 +55,7 @@ class TemplateEndpointTest extends MiniCrmBaseTest
     /**
      * @param $expected
      * @param array $responseBody
-     * @param $templateId
+     * @param int $templateId
      *
      * @throws \Exception
      *
@@ -64,7 +64,7 @@ class TemplateEndpointTest extends MiniCrmBaseTest
     public function testGetTemplate(
         $expected,
         array $responseBody,
-        $templateId
+        int $templateId
     ) {
         $mock = $this->createMiniCrmMock([
             new Response(
@@ -85,6 +85,9 @@ class TemplateEndpointTest extends MiniCrmBaseTest
         );
     }
 
+    /**
+     * @return array
+     */
     public function casesTemplateList()
     {
         return [

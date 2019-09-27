@@ -13,7 +13,7 @@ use GuzzleHttp\Psr7\Response;
 use Psr\Log\NullLogger;
 
 /**
- * @group MiniCrmClient
+ * @group Endpoints
  *
  * @covers \Cheppers\MiniCrm\Endpoints\TodoEndpoint
  */
@@ -68,7 +68,7 @@ class TodoEndpointTest extends MiniCrmBaseTest
     /**
      * @param $expected
      * @param array $responseBody
-     * @param $todoId
+     * @param int $todoId
      *
      * @throws \Exception
      *
@@ -98,6 +98,9 @@ class TodoEndpointTest extends MiniCrmBaseTest
         );
     }
 
+    /**
+     * @return array
+     */
     public function casesTodoList()
     {
         return [
