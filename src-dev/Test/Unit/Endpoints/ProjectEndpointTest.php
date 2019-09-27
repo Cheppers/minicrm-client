@@ -4,6 +4,9 @@ declare(strict_types = 1);
 
 namespace Cheppers\MiniCrm\Test\Unit\Endpoints;
 
+use Cheppers\MiniCrm\DataTypes\Project\ProjectEmailItem;
+use Cheppers\MiniCrm\DataTypes\Project\ProjectEmailsResponse;
+use Cheppers\MiniCrm\DataTypes\Project\ProjectRequest;
 use Cheppers\MiniCrm\DataTypes\Project\ProjectResponse;
 use Cheppers\MiniCrm\DataTypes\Project\SimpleProjectItem;
 use Cheppers\MiniCrm\DataTypes\Project\SingleProjectResponse;
@@ -286,6 +289,87 @@ class ProjectEndpointTest extends MiniCrmBaseTest
         $projectEndpoint->setCredentials($this->clientOptions);
 
         $project = $projectEndpoint->getProjectsByStatusGroup($statusGroup);
+
+        static::assertEquals(
+            json_encode($expected, JSON_PRETTY_PRINT),
+            json_encode($project, JSON_PRETTY_PRINT)
+        );
+    }
+
+    /**
+     * @return array
+     */
+    public function casesGetProjectEmails()
+    {
+        return [
+            'empty' => [
+                ProjectEmailsResponse::__set_state([]),
+                [
+                    'Results' => null,
+                    'Count' => null,
+                ],
+                ProjectRequest::__set_state([]),
+            ],
+            'basic' => [
+                ProjectEmailsResponse::__set_state([
+                    'Results' => [
+                        0 => ProjectEmailItem::__set_state([
+                            'Id' => 42,
+                            'TemplateId' => 42,
+                            'From' => 'Test From Email',
+                            'To' => 'Test To Email',
+                            'Subject' => 'Test Subject',
+                            'Body' => 'Test Body',
+                            'Status' => 'Test Status',
+                        ])
+                    ],
+                    'Count' => 1
+                ]),
+                [
+                    'Results' => [
+                        0 => [
+                            'Id' => 42,
+                            'TemplateId' => 42,
+                            'From' => 'Test From Email',
+                            'To' => 'Test To Email',
+                            'Subject' => 'Test Subject',
+                            'Body' => 'Test Body',
+                            'Status' => 'Test Status',
+                        ],
+                    ],
+                    'Count' => 1
+                ],
+                ProjectRequest::__set_state(['id' => 42]),
+            ],
+        ];
+    }
+
+    /**
+     * @param $expected
+     * @param array $responseBody
+     * @param $request
+     *
+     * @throws \Exception
+     *
+     * @dataProvider casesGetProjectEmails
+     */
+    public function testGetProjectEmails(
+        $expected,
+        array $responseBody,
+        $request
+    ) {
+        $mock = $this->createMiniCrmMock([
+            new Response(
+                200,
+                ['Content-Type' => 'application/json; charset=utf-8'],
+                \GuzzleHttp\json_encode($responseBody)
+            ),
+        ]);
+        $client = $mock['client'];
+        $projectEndpoint = new ProjectEndpoint($client, new NullLogger());
+        $projectEndpoint->setCredentials($this->clientOptions);
+
+        $project = $projectEndpoint->getProjectEmails($request);
 
         static::assertEquals(
             json_encode($expected, JSON_PRETTY_PRINT),
