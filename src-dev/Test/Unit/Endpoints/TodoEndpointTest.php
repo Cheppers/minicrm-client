@@ -239,6 +239,9 @@ class TodoEndpointTest extends MiniCrmBaseTest
         );
     }
 
+    /**
+     * @return array
+     */
     public function casesTodoUpdate()
     {
         return [
