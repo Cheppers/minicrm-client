@@ -1,8 +1,6 @@
 # MiniCrm client
 PHP library implementing the MiniCRM API https://www.minicrm.hu/help/minicrm-api/
 
-# Client library to communicate with OTP SimplePay written in PHP.
-
 [![CircleCI](https://circleci.com/gh/Cheppers/minicrm-client.svg?style=svg)](https://circleci.com/gh/Cheppers/minicrm-client)
 [![codecov](https://codecov.io/gh/Cheppers/minicrm-client/branch/master/graph/badge.svg)](https://codecov.io/gh/Cheppers/minicrm-client)
 
