@@ -21,9 +21,8 @@ class TemplateResponse extends ResponseBase
         ];
 
         foreach ($keys as $key) {
-            $instance->{lcfirst($key)} = $data[$key];
-
             if (array_key_exists($key, $data) && is_array($data[$key])) {
+                $instance->{lcfirst($key)} = $data[$key];
                 foreach ($data[$key] as $projectId => $result) {
                     if (is_array($result)) {
                         $instance->{lcfirst($key)}[$projectId] = TemplateItem::__set_state($result);

@@ -21,15 +21,10 @@ class ProjectEndpoint extends MiniCrmClient
      */
     public function getProject(int $projectId): SingleProjectResponse
     {
-        $path = "/Project/{$projectId}";
-
-        $response = $this->sendRequest(
-            'GET',
-            ProjectRequest::__set_state([]),
-            $path
+        $body = $this->getProjects(
+            "/Project/{$projectId}",
+            ProjectRequest::__set_state([])
         );
-
-        $body = $this->validateAndParseResponse($response);
 
         return SingleProjectResponse::__set_state($body);
     }
@@ -38,19 +33,15 @@ class ProjectEndpoint extends MiniCrmClient
      * @param int $categoryId
      *
      * @return \Cheppers\MiniCrm\DataTypes\Project\ProjectResponse
+     *
      * @throws \Exception
      */
     public function getProjectsByCategoryId(int $categoryId): ProjectResponse
     {
-        $path = "/Project?CategoryId={$categoryId}";
-
-        $response = $this->sendRequest(
-            'GET',
-            ProjectRequest::__set_state([]),
-            $path
+        $body = $this->getProjects(
+            "/Project?CategoryId={$categoryId}",
+            ProjectRequest::__set_state([])
         );
-
-        $body = $this->validateAndParseResponse($response);
 
         return ProjectResponse::__set_state($body);
     }
@@ -59,19 +50,15 @@ class ProjectEndpoint extends MiniCrmClient
      * @param string $statusGroup
      *
      * @return \Cheppers\MiniCrm\DataTypes\Project\ProjectResponse
+     *
      * @throws \Exception
      */
-    public function getProjectsByStatusGroup(string $statusGroup)
+    public function getProjectsByStatusGroup(string $statusGroup): ProjectResponse
     {
-        $path = "/Project?StatusGroup={$statusGroup}";
-
-        $response = $this->sendRequest(
-            'GET',
-            ProjectRequest::__set_state([]),
-            $path
+        $body = $this->getProjects(
+            "/Project?StatusGroup={$statusGroup}",
+            ProjectRequest::__set_state([])
         );
-
-        $body = $this->validateAndParseResponse($response);
 
         return ProjectResponse::__set_state($body);
     }
@@ -80,19 +67,15 @@ class ProjectEndpoint extends MiniCrmClient
      * @param int $userId
      *
      * @return \Cheppers\MiniCrm\DataTypes\Project\ProjectResponse
+     *
      * @throws \Exception
      */
-    public function getProjectsByUserId(int $userId)
+    public function getProjectsByUserId(int $userId): ProjectResponse
     {
-        $path= "/Project?UserId={$userId}";
-
-        $response = $this->sendRequest(
-            'GET',
-            ProjectRequest::__set_state([]),
-            $path
+        $body = $this->getProjects(
+            "/Project?UserId={$userId}",
+            ProjectRequest::__set_state([])
         );
-
-        $body = $this->validateAndParseResponse($response);
 
         return ProjectResponse::__set_state($body);
     }
@@ -106,10 +89,10 @@ class ProjectEndpoint extends MiniCrmClient
      */
     public function getProjectEmails(ProjectRequest $projectRequest): ProjectEmailsResponse
     {
-        $path = "/EmailList/{$projectRequest->id}";
-
-        $response = $this->sendRequest('GET', $projectRequest, $path);
-        $body = $this->validateAndParseResponse($response);
+        $body = $this->getProjects(
+            "/EmailList/{$projectRequest->id}",
+            $projectRequest
+        );
 
         return ProjectEmailsResponse::__set_state($body);
     }
@@ -128,6 +111,25 @@ class ProjectEndpoint extends MiniCrmClient
         $response = $this->sendRequest(
             'PUT',
             $projectRequest,
+            $path
+        );
+
+        return $this->validateAndParseResponse($response);
+    }
+
+    /**
+     * @param $path
+     * @param $request
+     *
+     * @return array
+     *
+     * @throws \Exception
+     */
+    protected function getProjects($path, $request): array
+    {
+        $response = $this->sendRequest(
+            'GET',
+            $request,
             $path
         );
 
