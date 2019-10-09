@@ -34,8 +34,8 @@ class AddressRequestTest extends TestCase
     {
         $addressRequest = new AddressRequest();
         $addressRequest->id = $data['id'];
-        $addressRequest->name = $data['name'];
         $addressRequest->contactId = $data['contactId'];
+        $addressRequest->name = $data['name'];
 
         static::assertSame($expected, $addressRequest->jsonSerialize());
     }
