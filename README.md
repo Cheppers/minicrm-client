@@ -40,10 +40,7 @@ Supported endpoints
     want to get the data structured or not. Default value is 'false'._  
     _The field 'contactId' is mandatory in AddressRequest, see the Basic
     usage section, how to provide it._
-    
-    __Keep in mind__ if you provide a 'contactId' already in use, the
-    method will update that particular contact with the given field's
-    values. 
+     
     ```php
     $client->getAddresses(AddressRequest $addressRequest, bool $structured = false);
     ```
@@ -60,6 +57,10 @@ Supported endpoints
 
     _Updates an Address based on the given ID._  
     _See the basic usage section how to provide the ID._
+    
+    __Keep in mind__ if you provide a 'contactId' already in use, the
+    method will update that particular contact with the given field's
+    values.
     ```php
     $client->updateAddress(AddressRequest $addressRequest);
     ```
