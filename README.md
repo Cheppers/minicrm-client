@@ -2,8 +2,7 @@
 PHP library implementing the MiniCRM API https://www.minicrm.hu/help/minicrm-api/
 
 [![CircleCI](https://circleci.com/gh/Cheppers/minicrm-client.svg?style=svg)](https://circleci.com/gh/Cheppers/minicrm-client)
-[![codecov](https://codecov.io/gh/Cheppers/minicrm-client/branch/master/graph/badge.svg)](https://codecov.io/gh/Cheppers/minicrm-client)
-
+[![codecov](https://codecov.io/gh/Cheppers/minicrm-client/branch/i26919-library-rewrite/graph/badge.svg)](https://codecov.io/gh/Cheppers/minicrm-client)
 
 Supported endpoints
 ------
