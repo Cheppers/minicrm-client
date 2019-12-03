@@ -49,8 +49,8 @@ class MiniCrmClientTest extends MiniCrmBaseTest
 
     public function testGetSetSystemId()
     {
-        $this->client->setSystemId(1234);
-        static::assertEquals(1234, $this->client->getSystemId());
+        $this->client->setSystemId('1234');
+        static::assertEquals('1234', $this->client->getSystemId());
     }
 
     public function casesCredentials()
@@ -58,7 +58,7 @@ class MiniCrmClientTest extends MiniCrmBaseTest
         return [
             'credential-1' => [
                 [
-                    'systemid' => 12345,
+                    'systemid' => '12345',
                     'apikey' => '3EiTVRS9WCHuqjZm6c0Ov8nROxGtW7LL',
                     'baseUri' => 'testuri',
                 ],
@@ -66,7 +66,7 @@ class MiniCrmClientTest extends MiniCrmBaseTest
             ],
             'credential-2' => [
                 [
-                    'systemid' => 98765,
+                    'systemid' => '98765',
                     'apikey' => '9Lsc3OrDqBeehFCtfRiDhtay881YVCft',
                     'baseUri' => 'nottesturi',
                 ],
@@ -93,12 +93,12 @@ class MiniCrmClientTest extends MiniCrmBaseTest
         $this->client->setCredentials([
             'baseUri' => 'http://minicrm.hu',
             'apiKey' => 'm-i-n-i',
-            'systemId' => 1234,
+            'systemId' => '1234',
             'default' => 1
         ]);
         static::assertEquals('http://minicrm.hu', $this->client->getBaseUri());
         static::assertEquals('m-i-n-i', $this->client->getApiKey());
-        static::assertEquals(1234, $this->client->getSystemId());
+        static::assertEquals('1234', $this->client->getSystemId());
     }
 
     public function casesSendRequest()
