@@ -34,9 +34,9 @@ class MiniCrmClient implements MiniCrmClientInterface
     protected $apiKey = '';
 
     /**
-     * @var integer
+     * @var string
      */
-    protected $systemId;
+    protected $systemId = '';
 
     /**
      * {@inheritdoc}
@@ -88,7 +88,7 @@ class MiniCrmClient implements MiniCrmClientInterface
     /**
      * {@inheritdoc}
      */
-    public function getSystemId(): int
+    public function getSystemId(): string
     {
         return $this->systemId;
     }
@@ -96,7 +96,7 @@ class MiniCrmClient implements MiniCrmClientInterface
     /**
      * {@inheritdoc}
      */
-    public function setSystemId(int $systemId): MiniCrmClient
+    public function setSystemId(string $systemId): MiniCrmClient
     {
         $this->systemId = $systemId;
 
