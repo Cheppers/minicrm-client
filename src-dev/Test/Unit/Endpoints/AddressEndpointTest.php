@@ -96,7 +96,7 @@ class AddressEndpointTest extends MiniCrmBaseTest
         $addressEndpoint = new AddressEndpoint($client, new NullLogger());
         $addressEndpoint->setCredentials($this->clientOptions);
 
-        $address = $addressEndpoint->getAddress($addressId);
+        $address = $addressEndpoint->get($addressId);
 
         static::assertEquals(
             json_encode($expected, JSON_PRETTY_PRINT),
@@ -162,7 +162,7 @@ class AddressEndpointTest extends MiniCrmBaseTest
         $addressEndpoint = new AddressEndpoint($client, new NullLogger());
         $addressEndpoint->setCredentials($this->clientOptions);
 
-        $address = $addressEndpoint->getAddresses($request);
+        $address = $addressEndpoint->getMultiple($request);
 
         static::assertEquals(
             json_encode($expected, JSON_PRETTY_PRINT),
@@ -240,7 +240,7 @@ class AddressEndpointTest extends MiniCrmBaseTest
         $addressEndpoint = new AddressEndpoint($client, new NullLogger());
         $addressEndpoint->setCredentials($this->clientOptions);
 
-        $address = $addressEndpoint->getAddresses($request, true);
+        $address = $addressEndpoint->getMultiple($request, true);
 
         static::assertEquals(
             json_encode($expected, JSON_PRETTY_PRINT),
@@ -306,7 +306,7 @@ class AddressEndpointTest extends MiniCrmBaseTest
         $addressEndpoint = new AddressEndpoint($client, new NullLogger());
         $addressEndpoint->setCredentials($this->clientOptions);
 
-        $address = $addressEndpoint->createAddress($request);
+        $address = $addressEndpoint->create($request);
 
         static::assertEquals(
             json_encode($expected, JSON_PRETTY_PRINT),
@@ -369,7 +369,7 @@ class AddressEndpointTest extends MiniCrmBaseTest
         $addressEndpoint = new AddressEndpoint($client, new NullLogger());
         $addressEndpoint->setCredentials($this->clientOptions);
 
-        $address = $addressEndpoint->updateAddress($request);
+        $address = $addressEndpoint->update($request);
 
         static::assertEquals(
             json_encode($expected, JSON_PRETTY_PRINT),

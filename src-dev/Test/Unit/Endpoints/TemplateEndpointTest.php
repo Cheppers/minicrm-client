@@ -77,7 +77,7 @@ class TemplateEndpointTest extends MiniCrmBaseTest
         $templateEndpoint = new TemplateEndpoint($client, new NullLogger());
         $templateEndpoint->setCredentials($this->clientOptions);
 
-        $template = $templateEndpoint->getTemplate($templateId);
+        $template = $templateEndpoint->get($templateId);
 
         static::assertEquals(
             json_encode($expected, JSON_PRETTY_PRINT),
@@ -154,7 +154,7 @@ class TemplateEndpointTest extends MiniCrmBaseTest
         $templateEndpoint = new TemplateEndpoint($client, new NullLogger());
         $templateEndpoint->setCredentials($this->clientOptions);
 
-        $template = $templateEndpoint->getTemplateList($request);
+        $template = $templateEndpoint->getList($request);
 
         static::assertEquals(
             json_encode($expected, JSON_PRETTY_PRINT),

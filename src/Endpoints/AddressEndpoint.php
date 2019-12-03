@@ -7,9 +7,10 @@ namespace Cheppers\MiniCrm\Endpoints;
 use Cheppers\MiniCrm\DataTypes\Address\AddressRequest;
 use Cheppers\MiniCrm\DataTypes\Address\AddressResponse;
 use Cheppers\MiniCrm\DataTypes\Address\StructuredAddressResponse;
+use Cheppers\MiniCrm\DataTypes\RequestBase;
 use Cheppers\MiniCrm\MiniCrmClient;
 
-class AddressEndpoint extends MiniCrmClient
+class AddressEndpoint extends MiniCrmClient implements EndpointInterface
 {
     /**
      * @param int $addressId
@@ -18,7 +19,7 @@ class AddressEndpoint extends MiniCrmClient
      *
      * @throws \Exception
      */
-    public function getAddress(int $addressId)
+    public function get(int $addressId)
     {
         $path = "/Address/{$addressId}";
 
@@ -41,7 +42,7 @@ class AddressEndpoint extends MiniCrmClient
      *
      * @throws \Exception
      */
-    public function getAddresses(AddressRequest $addressRequest, bool $structured = false)
+    public function getMultiple(AddressRequest $addressRequest, bool $structured = false)
     {
         $path = "/AddressList/{$addressRequest->contactId}";
         $path = $structured ? "{$path}?Structured=1" : $path;
@@ -61,13 +62,13 @@ class AddressEndpoint extends MiniCrmClient
     }
 
     /**
-     * @param \Cheppers\MiniCrm\DataTypes\Address\AddressRequest $addressRequest
+     * @param \Cheppers\MiniCrm\DataTypes\RequestBase $addressRequest
      *
      * @return array
      *
      * @throws \Exception
      */
-    public function createAddress(AddressRequest $addressRequest): array
+    public function create(RequestBase $addressRequest): array
     {
         $response = $this->sendRequest('PUT', $addressRequest, '/Address');
 
@@ -75,16 +76,16 @@ class AddressEndpoint extends MiniCrmClient
     }
 
     /**
-     * @param \Cheppers\MiniCrm\DataTypes\Address\AddressRequest $addressRequest
+     * @param \Cheppers\MiniCrm\DataTypes\RequestBase $addressRequest
      *
      * @return array
      *
      * @throws \Exception
      */
-    public function updateAddress(AddressRequest $addressRequest): array
+    public function update(RequestBase $addressRequest): array
     {
         $path = "/Address/{$addressRequest->id}";
-        $address = $this->getAddress($addressRequest->id);
+        $address = $this->get($addressRequest->id);
 
         // ContactId can not be changed.
         $addressRequest->contactId = $address->contactId;

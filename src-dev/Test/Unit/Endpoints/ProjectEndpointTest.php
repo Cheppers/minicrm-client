@@ -93,7 +93,7 @@ class ProjectEndpointTest extends MiniCrmBaseTest
         $projectEndpoint = new ProjectEndpoint($client, new NullLogger());
         $projectEndpoint->setCredentials($this->clientOptions);
 
-        $project = $projectEndpoint->getProject($projectId);
+        $project = $projectEndpoint->get($projectId);
 
         static::assertEquals(
             json_encode($expected, JSON_PRETTY_PRINT),
@@ -174,7 +174,7 @@ class ProjectEndpointTest extends MiniCrmBaseTest
         $projectEndpoint = new ProjectEndpoint($client, new NullLogger());
         $projectEndpoint->setCredentials($this->clientOptions);
 
-        $project = $projectEndpoint->getProjectsByCategoryId($id);
+        $project = $projectEndpoint->getByCategoryId($id);
 
         static::assertEquals(
             json_encode($expected, JSON_PRETTY_PRINT),
@@ -207,7 +207,7 @@ class ProjectEndpointTest extends MiniCrmBaseTest
         $projectEndpoint = new ProjectEndpoint($client, new NullLogger());
         $projectEndpoint->setCredentials($this->clientOptions);
 
-        $project = $projectEndpoint->getProjectsByUserId($id);
+        $project = $projectEndpoint->getByUserId($id);
 
         static::assertEquals(
             json_encode($expected, JSON_PRETTY_PRINT),
@@ -288,7 +288,7 @@ class ProjectEndpointTest extends MiniCrmBaseTest
         $projectEndpoint = new ProjectEndpoint($client, new NullLogger());
         $projectEndpoint->setCredentials($this->clientOptions);
 
-        $project = $projectEndpoint->getProjectsByStatusGroup($statusGroup);
+        $project = $projectEndpoint->getByStatusGroup($statusGroup);
 
         static::assertEquals(
             json_encode($expected, JSON_PRETTY_PRINT),
@@ -369,7 +369,7 @@ class ProjectEndpointTest extends MiniCrmBaseTest
         $projectEndpoint = new ProjectEndpoint($client, new NullLogger());
         $projectEndpoint->setCredentials($this->clientOptions);
 
-        $project = $projectEndpoint->getProjectEmails($request);
+        $project = $projectEndpoint->getEmails($request);
 
         static::assertEquals(
             json_encode($expected, JSON_PRETTY_PRINT),
@@ -434,7 +434,7 @@ class ProjectEndpointTest extends MiniCrmBaseTest
         $projectEndpoint = new ProjectEndpoint($client, new NullLogger());
         $projectEndpoint->setCredentials($this->clientOptions);
 
-        $project = $projectEndpoint->updateProject($request);
+        $project = $projectEndpoint->update($request);
 
         static::assertEquals(
             json_encode($expected, JSON_PRETTY_PRINT),
@@ -490,7 +490,7 @@ class ProjectEndpointTest extends MiniCrmBaseTest
         $projectEndpoint = new ProjectEndpoint($client, new NullLogger());
         $projectEndpoint->setCredentials($this->clientOptions);
 
-        $project = $projectEndpoint->createProject($request);
+        $project = $projectEndpoint->create($request);
 
         static::assertEquals(
             json_encode($expected, JSON_PRETTY_PRINT),

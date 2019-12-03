@@ -8,9 +8,10 @@ use Cheppers\MiniCrm\DataTypes\Project\ProjectEmailsResponse;
 use Cheppers\MiniCrm\DataTypes\Project\SingleProjectResponse;
 use Cheppers\MiniCrm\DataTypes\Project\ProjectRequest;
 use Cheppers\MiniCrm\DataTypes\Project\ProjectResponse;
+use Cheppers\MiniCrm\DataTypes\RequestBase;
 use Cheppers\MiniCrm\MiniCrmClient;
 
-class ProjectEndpoint extends MiniCrmClient
+class ProjectEndpoint extends MiniCrmClient implements EndpointInterface
 {
     /**
      * @param int $projectId
@@ -19,9 +20,9 @@ class ProjectEndpoint extends MiniCrmClient
      *
      * @throws \Exception
      */
-    public function getProject(int $projectId): SingleProjectResponse
+    public function get(int $projectId): SingleProjectResponse
     {
-        $body = $this->getProjects(
+        $body = $this->getMultiple(
             "/Project/{$projectId}",
             ProjectRequest::__set_state([])
         );
@@ -36,9 +37,9 @@ class ProjectEndpoint extends MiniCrmClient
      *
      * @throws \Exception
      */
-    public function getProjectsByCategoryId(int $categoryId): ProjectResponse
+    public function getByCategoryId(int $categoryId): ProjectResponse
     {
-        $body = $this->getProjects(
+        $body = $this->getMultiple(
             "/Project?CategoryId={$categoryId}",
             ProjectRequest::__set_state([])
         );
@@ -53,9 +54,9 @@ class ProjectEndpoint extends MiniCrmClient
      *
      * @throws \Exception
      */
-    public function getProjectsByStatusGroup(string $statusGroup): ProjectResponse
+    public function getByStatusGroup(string $statusGroup): ProjectResponse
     {
-        $body = $this->getProjects(
+        $body = $this->getMultiple(
             "/Project?StatusGroup={$statusGroup}",
             ProjectRequest::__set_state([])
         );
@@ -70,9 +71,9 @@ class ProjectEndpoint extends MiniCrmClient
      *
      * @throws \Exception
      */
-    public function getProjectsByUserId(int $userId): ProjectResponse
+    public function getByUserId(int $userId): ProjectResponse
     {
-        $body = $this->getProjects(
+        $body = $this->getMultiple(
             "/Project?UserId={$userId}",
             ProjectRequest::__set_state([])
         );
@@ -87,9 +88,9 @@ class ProjectEndpoint extends MiniCrmClient
      *
      * @throws \Exception
      */
-    public function getProjectEmails(ProjectRequest $projectRequest): ProjectEmailsResponse
+    public function getEmails(ProjectRequest $projectRequest): ProjectEmailsResponse
     {
-        $body = $this->getProjects(
+        $body = $this->getMultiple(
             "/EmailList/{$projectRequest->id}",
             $projectRequest
         );
@@ -98,13 +99,13 @@ class ProjectEndpoint extends MiniCrmClient
     }
 
     /**
-     * @param \Cheppers\MiniCrm\DataTypes\Project\ProjectRequest $projectRequest
+     * @param \Cheppers\MiniCrm\DataTypes\RequestBase $projectRequest
      *
      * @return array
      *
      * @throws \Exception
      */
-    public function createProject(ProjectRequest $projectRequest): array
+    public function create(RequestBase $projectRequest): array
     {
         $path = "/Project";
 
@@ -125,7 +126,7 @@ class ProjectEndpoint extends MiniCrmClient
      *
      * @throws \Exception
      */
-    protected function getProjects($path, $request): array
+    protected function getMultiple($path, $request): array
     {
         $response = $this->sendRequest(
             'GET',
@@ -137,16 +138,16 @@ class ProjectEndpoint extends MiniCrmClient
     }
 
     /**
-     * @param \Cheppers\MiniCrm\DataTypes\Project\ProjectRequest $projectRequest
+     * @param \Cheppers\MiniCrm\DataTypes\RequestBase $projectRequest
      *
      * @return array
      *
      * @throws \Exception
      */
-    public function updateProject(ProjectRequest $projectRequest): array
+    public function update(RequestBase $projectRequest): array
     {
         $path = "/Project/{$projectRequest->id}";
-        $project = $this->getProject($projectRequest->id);
+        $project = $this->get($projectRequest->id);
 
         // CategoryId and ContactId can not be changed.
         $projectRequest->categoryId = $project->categoryId;

@@ -19,7 +19,7 @@ class CategoryEndpoint extends MiniCrmClient
      *
      * @throws \Exception
      */
-    public function getCategories(CategoryRequest $categoryRequest, bool $detailed = false)
+    public function getMultiple(CategoryRequest $categoryRequest, bool $detailed = false)
     {
         $path = '/Category';
         $path = $detailed ? "{$path}?Detailed=1" : $path;

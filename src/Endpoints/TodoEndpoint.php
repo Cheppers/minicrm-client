@@ -4,12 +4,13 @@ declare(strict_types = 1);
 
 namespace Cheppers\MiniCrm\Endpoints;
 
+use Cheppers\MiniCrm\DataTypes\RequestBase;
 use Cheppers\MiniCrm\DataTypes\Todo\SingleTodoResponse;
 use Cheppers\MiniCrm\DataTypes\Todo\TodoListResponse;
 use Cheppers\MiniCrm\DataTypes\Todo\TodoRequest;
 use Cheppers\MiniCrm\MiniCrmClient;
 
-class TodoEndpoint extends MiniCrmClient
+class TodoEndpoint extends MiniCrmClient implements EndpointInterface
 {
     /**
      * @param int $todoId
@@ -18,7 +19,7 @@ class TodoEndpoint extends MiniCrmClient
      *
      * @throws \Exception
      */
-    public function getTodo(int $todoId): SingleTodoResponse
+    public function get(int $todoId): SingleTodoResponse
     {
         $path = "/ToDo/{$todoId}";
 
@@ -40,7 +41,7 @@ class TodoEndpoint extends MiniCrmClient
      *
      * @throws \Exception
      */
-    public function getTodoList(int $projectId): TodoListResponse
+    public function getList(int $projectId): TodoListResponse
     {
         $path = "/ToDoList/{$projectId}";
 
@@ -56,13 +57,13 @@ class TodoEndpoint extends MiniCrmClient
     }
 
     /**
-     * @param \Cheppers\MiniCrm\DataTypes\Todo\TodoRequest $todoRequest
+     * @param \Cheppers\MiniCrm\DataTypes\RequestBase $todoRequest
      *
      * @return array
      *
      * @throws \Exception
      */
-    public function createTodo(TodoRequest $todoRequest): array
+    public function create(RequestBase $todoRequest): array
     {
         $response = $this->sendRequest('PUT', $todoRequest, '/ToDo');
 
@@ -74,16 +75,16 @@ class TodoEndpoint extends MiniCrmClient
      * Only Todos that are in 'Open' status can be updated.
      * ProjectId of an existing Todo cannot be changed.
      *
-     * @param \Cheppers\MiniCrm\DataTypes\Todo\TodoRequest $todoRequest
+     * @param \Cheppers\MiniCrm\DataTypes\RequestBase $todoRequest
      *
      * @return array
      *
      * @throws \Exception
      */
-    public function updateTodo(TodoRequest $todoRequest): array
+    public function update(RequestBase $todoRequest): array
     {
         $path = "/ToDo/{$todoRequest->id}";
-        $todo = $this->getTodo($todoRequest->id);
+        $todo = $this->get($todoRequest->id);
 
         // ProjectId can not be changed.
         $todoRequest->projectId = $todo->projectId;

@@ -18,7 +18,7 @@ class TemplateEndpoint extends MiniCrmClient
      *
      * @throws \Exception
      */
-    public function getTemplate(int $templateId): SimpleTemplateItem
+    public function get(int $templateId): SimpleTemplateItem
     {
         $path = "/Template/{$templateId}";
 
@@ -40,7 +40,7 @@ class TemplateEndpoint extends MiniCrmClient
      *
      * @throws \Exception
      */
-    public function getTemplateList(TemplateRequest $templateRequest): TemplateResponse
+    public function getList(TemplateRequest $templateRequest): TemplateResponse
     {
         $response = $this->sendRequest(
             'GET',

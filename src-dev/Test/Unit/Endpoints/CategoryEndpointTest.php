@@ -74,7 +74,7 @@ class CategoryEndpointTest extends MiniCrmBaseTest
         $categoryEndpoint = new CategoryEndpoint($client, new NullLogger());
         $categoryEndpoint->setCredentials($this->clientOptions);
 
-        $todo = $categoryEndpoint->getCategories($request);
+        $todo = $categoryEndpoint->getMultiple($request);
 
         static::assertEquals(
             json_encode($expected, JSON_PRETTY_PRINT),
@@ -152,7 +152,7 @@ class CategoryEndpointTest extends MiniCrmBaseTest
         $categoryEndpoint = new CategoryEndpoint($client, new NullLogger());
         $categoryEndpoint->setCredentials($this->clientOptions);
 
-        $todo = $categoryEndpoint->getCategories($request, true);
+        $todo = $categoryEndpoint->getMultiple($request, true);
 
         static::assertEquals(
             json_encode($expected, JSON_PRETTY_PRINT),
