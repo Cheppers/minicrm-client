@@ -30,7 +30,7 @@ abstract class MiniCrmBaseTest extends TestCase
         $this->clientOptions = [
             'baseUri' => 'http://minicrm.hu',
             'apiKey' => 'm-i-n-i',
-            'systemId' => 1234
+            'systemId' => '1234',
         ];
     }
 

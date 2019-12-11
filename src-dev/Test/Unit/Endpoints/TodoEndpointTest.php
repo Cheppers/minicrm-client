@@ -90,7 +90,7 @@ class TodoEndpointTest extends MiniCrmBaseTest
         $todoEndpoint = new TodoEndpoint($client, new NullLogger());
         $todoEndpoint->setCredentials($this->clientOptions);
 
-        $todo = $todoEndpoint->getTodo($todoId);
+        $todo = $todoEndpoint->get($todoId);
 
         static::assertEquals(
             json_encode($expected, JSON_PRETTY_PRINT),
@@ -173,7 +173,7 @@ class TodoEndpointTest extends MiniCrmBaseTest
         $todoEndpoint = new TodoEndpoint($client, new NullLogger());
         $todoEndpoint->setCredentials($this->clientOptions);
 
-        $todo = $todoEndpoint->getTodoList($projectId);
+        $todo = $todoEndpoint->getList($projectId);
 
         static::assertEquals(
             json_encode($expected, JSON_PRETTY_PRINT),
@@ -234,7 +234,7 @@ class TodoEndpointTest extends MiniCrmBaseTest
         $todoEndpoint = new TodoEndpoint($client, new NullLogger());
         $todoEndpoint->setCredentials($this->clientOptions);
 
-        $todo = $todoEndpoint->createTodo($request);
+        $todo = $todoEndpoint->create($request);
 
         static::assertEquals(
             json_encode($expected, JSON_PRETTY_PRINT),
@@ -297,7 +297,7 @@ class TodoEndpointTest extends MiniCrmBaseTest
         $todoEndpoint = new TodoEndpoint($client, new NullLogger());
         $todoEndpoint->setCredentials($this->clientOptions);
 
-        $todo = $todoEndpoint->updateTodo($request);
+        $todo = $todoEndpoint->update($request);
 
         static::assertEquals(
             json_encode($expected, JSON_PRETTY_PRINT),

@@ -28,16 +28,16 @@ interface MiniCrmClientInterface
     public function setApiKey(string $apiKey);
 
     /**
-     * @return int
+     * @return string
      */
-    public function getSystemId(): int;
+    public function getSystemId(): string;
 
     /**
      * @param $systemId
      *
      * @return $this
      */
-    public function setSystemId(int $systemId);
+    public function setSystemId(string $systemId);
 
     /**
      * @return string
