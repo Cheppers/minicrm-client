@@ -47,6 +47,31 @@ class ProjectEndpoint extends MiniCrmClient implements EndpointInterface
         return ProjectResponse::__set_state($body);
     }
 
+    public function getAllProjectsByCategoryId(int $categoryId)
+    {
+        $projects = $this->getByCategoryId($categoryId);
+        $pager = 0;
+        $numberOfPages = ceil($projects->count/100);
+        $body = [];
+        $simpleBody = [
+            'Count' => 0,
+            'Results' => [],
+        ];
+
+        while ($pager < $numberOfPages) {
+            $response = $this->getMultiple(
+                "/Project?CategoryId={$categoryId}?Page={$pager}",
+                ProjectRequest::__set_state([])
+            );
+
+            $simpleBody['Results'] = array_merge($simpleBody['Results'], $response['Results']);
+
+            $pager++;
+        }
+
+        return ProjectResponse::__set_state($simpleBody);
+    }
+
     /**
      * @param string $statusGroup
      *
