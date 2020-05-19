@@ -50,7 +50,7 @@ class ProjectEndpoint extends MiniCrmClient implements EndpointInterface
     public function getAllProjectsByCategoryId(int $categoryId)
     {
         $projects = $this->getByCategoryId($categoryId);
-        $pager = 0;
+        $pager = 1;
         $numberOfPages = ceil($projects->count/100);
         $body = [];
         $simpleBody = [
@@ -60,16 +60,19 @@ class ProjectEndpoint extends MiniCrmClient implements EndpointInterface
 
         while ($pager < $numberOfPages) {
             $response = $this->getMultiple(
-                "/Project?CategoryId={$categoryId}?Page={$pager}",
+                "/Project?CategoryId={$categoryId}&Page={$pager}",
                 ProjectRequest::__set_state([])
             );
 
-            $simpleBody['Results'] = array_merge($simpleBody['Results'], $response['Results']);
+            $projectsNew = ProjectResponse::__set_state($response);
 
+            $newResults = array_merge($projects->results, $projectsNew->results);
+
+            $projects->results = $newResults;
             $pager++;
         }
 
-        return ProjectResponse::__set_state($simpleBody);
+        return $projects;
     }
 
     /**
