@@ -30,6 +30,11 @@ class ProjectRequest extends RequestBase
     public $name;
 
     /**
+     * @var array
+     */
+    public $additionalProperties = [];
+
+    /**
      * {@inheritdoc}
      */
     public function jsonSerialize()
@@ -39,7 +44,9 @@ class ProjectRequest extends RequestBase
         foreach (array_keys(get_object_vars($this)) as $key) {
             switch ($key) {
                 case 'id':
-                    $data['Id'] = $this->id;
+                    if (!is_null($this->id)) {
+                        $data['Id'] = $this->id;
+                    }
                     break;
                 case 'categoryId':
                     $data['CategoryId'] = $this->categoryId;
@@ -49,6 +56,13 @@ class ProjectRequest extends RequestBase
                     break;
                 case 'name':
                     $data['Name'] = $this->name;
+                    break;
+                case 'additionalProperties':
+                    if (!empty($this->additionalProperties)) {
+                        foreach ($this->additionalProperties as $item => $value) {
+                            $data[ucfirst($item)] = $value;
+                        }
+                    }
                     break;
             }
         }

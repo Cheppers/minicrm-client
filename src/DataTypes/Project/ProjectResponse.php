@@ -21,8 +21,13 @@ class ProjectResponse extends ResponseBase
         ];
 
         foreach ($keys as $key) {
-            if (array_key_exists($key, $data) && is_array($data[$key])) {
+            if (array_key_exists($key, $data)) {
                 $instance->{lcfirst($key)} = $data[$key];
+
+                if (!is_array($data[$key])) {
+                    continue;
+                }
+
                 foreach ($data[$key] as $projectId => $result) {
                     if (is_array($result)) {
                         $instance->{lcfirst($key)}[$projectId] = SimpleProjectItem::__set_state($result);

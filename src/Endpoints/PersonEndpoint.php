@@ -89,4 +89,23 @@ class PersonEndpoint extends MiniCrmClient implements EndpointInterface
 
         return $this->validateAndParseResponse($response);
     }
+
+    /**
+     * Search contact by email.
+     *
+     * @param string $email
+     *
+     * @return array
+     * @throws \Exception
+     */
+    public function search(string $email): array
+    {
+        $response = $this->sendRequest(
+            'GET',
+            ContactRequestBase::__set_state([]),
+            "/Contact?Email={$email}"
+        );
+
+        return $this->validateAndParseResponse($response);
+    }
 }
